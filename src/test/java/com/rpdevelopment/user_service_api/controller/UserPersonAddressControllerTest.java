@@ -7,9 +7,11 @@ import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
 import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
 import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -52,6 +54,7 @@ public class UserPersonAddressControllerTest {
     }
 
     // ================= GET =================
+
     //GET ID EXISTENTE
     @Test
     public void findByIdShouldReturnUserWhenIdExists() throws Exception {
