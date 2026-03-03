@@ -63,16 +63,18 @@ public class UserPersonAddressService {
     @Transactional
     public UserPersonAddressDto save (UserPersonAddressDto userPersonAddressDto) {
 
-        User user = new User();
         if (userRepository.existsByEmail(userPersonAddressDto.getEmail())) {
             throw new DuplicateResourceException("Email already exists");
         }
-        copyUserDtoToUser(userPersonAddressDto, user);
 
-        Person person = new Person();
         if (personRepository.existsByDocument(userPersonAddressDto.getPerson().getDocument())){
             throw new DuplicateResourceException("Document already exists");
         }
+
+        User user = new User();
+        copyUserDtoToUser(userPersonAddressDto, user);
+        Person person = new Person();
+
         copyPersonDtotoPerson(userPersonAddressDto, person);
         user.setPerson(person);
 
