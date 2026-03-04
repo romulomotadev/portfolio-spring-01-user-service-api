@@ -20,10 +20,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +80,7 @@ public class UserPersonAddressServiceTest {
         Assertions.assertThat(result.getName()).isEqualTo(user.getName());
         Assertions.assertThat(result.getEmail()).isEqualTo(user.getEmail());
         Assertions.assertThat(result.getPerson().getDocument()).isEqualTo(user.getPerson().getDocument());
-        Assertions.assertThat(result.getAddresses().get(1).getRoad()).isEqualTo(user.getAddresses().get(1).getRoad());
+        Assertions.assertThat(result.getAddresses().get(0).getRoad()).isEqualTo(user.getAddresses().get(0).getRoad());
 
         //Verificação chamada
         Mockito.verify(userRepository).findById(existingId);
@@ -220,9 +222,9 @@ public class UserPersonAddressServiceTest {
         Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         //Ação || Validação
-        assertThrows(ResourceNotFoundException.class, () -> {
-            service.update(updateDto, nonExistingId);
-        });
+        Assertions.assertThatThrownBy(() -> service.update(updateDto, nonExistingId))
+                .isInstanceOf(ResourceNotFoundException.class);
+
     }
 
     //EMAIL DUPLICADO
@@ -245,7 +247,6 @@ public class UserPersonAddressServiceTest {
     }
 
     //DOCUMENTO DUPLICADO
-    //EMAIL DUPLICADO
     @Test
     public void updateShouldThrowDuplicateResourceExceptionWhenDocumentAlreadyExists(){
 
@@ -263,4 +264,55 @@ public class UserPersonAddressServiceTest {
                 .isInstanceOf(DuplicateResourceException.class)
                 .hasMessage("Document already exists");
     }
+
+    // ================= DELETE =================
+
+    //ID EXISTENTE
+    @Test
+    public void deleteShouldWhenIdExists(){
+
+        //Preparando
+        Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
+
+        //Ação + Verificação
+        Assertions.assertThatCode(() -> service.delete(existingId))
+                .doesNotThrowAnyException();
+
+        //verificação chamada
+        Mockito.verify(userRepository, Mockito.times(1)).delete(user);
+    }
+
+    //ID INEXISTENTE
+    @Test
+    public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist(){
+
+        //Preparando
+        Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+        //Ação Verificação
+        Assertions.assertThatThrownBy(()-> service.delete(nonExistingId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Id Not Found");;
+
+        // Garantir que o delete NUNCA foi chamado
+        Mockito.verify(userRepository, Mockito.never()).delete(Mockito.any());
+    }
+
+    //ID DEPENDENTE
+    @Test
+    public void deleteShouldThrowDataIntegrityViolationExceptionWhenDependentId(){
+
+        //Preparando
+        Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
+
+        Mockito.doThrow(DataIntegrityViolationException.class).when(userRepository).delete(user);
+
+        //Ação Verificação
+        Assertions.assertThatThrownBy(()-> service.delete(existingId))
+                .isInstanceOf(DataIntegrityViolationException.class);
+
+        // Garantir que o delete NUNCA foi chamado
+        Mockito.verify(userRepository, Mockito.times(1)).delete(user);
+    }
+
 }

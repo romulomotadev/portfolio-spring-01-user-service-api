@@ -13,17 +13,4 @@ public class UserFactoryDto {
         User user = createUser();
         return new UserPersonAddressDto(user);
     }
-
-    //EMAIL DUPLICADO
-    public static UserPersonAddressDto createUserEmailDuplicateFactoryDto() {
-        User userEmailDuplicate = createUserEmailDuplicate();
-        return new UserPersonAddressDto(userEmailDuplicate);
-    }
-
-    //DOCUMENTO DUPLICADO
-    public static UserPersonAddressDto createUserDocumentDuplicateFactoryDto() {
-        User userDocumentDuplicate = createUserDocumentDuplicate();
-        return new UserPersonAddressDto(userDocumentDuplicate);
-    }
-
 }
