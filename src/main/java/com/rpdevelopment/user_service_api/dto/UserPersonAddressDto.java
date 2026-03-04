@@ -99,4 +99,29 @@ public class UserPersonAddressDto {
     public List<AddressDto> getAddresses() {
         return addresses;
     }
+
+    //Setter
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(@NotBlank(message = "Campo nome requerido") @Size(min = 6, max = 50, message = "Requerido 6 a 50 caracteres") String name) {
+        this.name = name;
+    }
+
+    public void setEmail(@NotBlank(message = "Campo e-mail requerido") @Email(message = "E-mail invalido") String email) {
+        this.email = email;
+    }
+
+    public void setBirthDate(@NotNull(message = "Campo nascimento obrigatório") LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void setPassword(@NotBlank(message = "Campo senha requerido") @Size(min = 6, max = 12, message = "Requerido de 6 a 12 caracteres.") String password) {
+        this.password = password;
+    }
+
+    public void setPerson(@NotNull @Valid PersonDto person) {
+        this.person = person;
+    }
 }

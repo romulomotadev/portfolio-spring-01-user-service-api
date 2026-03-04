@@ -47,4 +47,17 @@ public class PersonDto {
     public String getDocument() {
         return document;
     }
+
+    //Setter
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setDocument(@NotBlank(message = "Campo documento requerido.") String document) {
+        this.document = document;
+    }
+
+    public void setType(@NotNull(message = "Requerido tipo de documento PF ou PJ.") Type type) {
+        this.type = type;
+    }
 }
