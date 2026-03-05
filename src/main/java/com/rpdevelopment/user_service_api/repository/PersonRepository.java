@@ -11,5 +11,5 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     boolean existsByDocument(String document);
 
     //DOCUMENT EXIST - ID NOT
-    boolean existsByDocumentAndIdNot(String email, Long id);
+    boolean existsByDocumentAndIdNot(String document, Long id);
 }
