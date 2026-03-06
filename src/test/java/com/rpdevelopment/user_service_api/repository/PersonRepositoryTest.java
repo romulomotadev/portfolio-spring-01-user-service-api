@@ -20,9 +20,7 @@ public class PersonRepositoryTest {
 
     @BeforeEach
     void setUp() {
-
-        user = UserFactory.createValidUserWithId();
-
+        user = UserFactory.createNewUser();
     }
 
     //DOCUMENTO EXISTENTE
@@ -45,15 +43,21 @@ public class PersonRepositoryTest {
     @Test
     public void shouldReturnTrueWhenDocumentExistsForAnotherId(){
 
-        // Preparando
-        Person person = personRepository.save(user.getPerson());
+        // 1. Criar e limpar o primeiro usuário
+        User user1 = UserFactory.createNewUser();
+        user1.setEmail("user1@gmail.com");
+        user1.getPerson().setDocument("11122233344");
+        personRepository.save(user1.getPerson());
 
-        User user2 = UserFactory.createValidUserWithId();
-        user2.setId(2L);
+        // 2. Criar e limpar o segundo usuário
+        User user2 = UserFactory.createNewUser();
+        user2.setEmail("user2@gmail.com");
+        user2.getPerson().setDocument("99988877766");
+        personRepository.save(user2.getPerson());
 
         // Ação
         Boolean result = personRepository
-                .existsByDocumentAndIdNot(user2.getPerson().getDocument(), user2.getId());
+                .existsByDocumentAndIdNot("11122233344", user2.getId());
 
         // Verificação
         Assertions.assertTrue(result);
