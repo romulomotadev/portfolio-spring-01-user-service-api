@@ -49,7 +49,7 @@ public class UserPersonAddressControllerTest {
     void setUp() throws Exception {
         existingId = 1L;
         nonExistingId = 1000L;
-        dto = UserFactoryDto.createUserFactoryDto();
+        dto = UserFactoryDto.createValidUserFactoryDto();
         pageDto = new PageImpl<>(List.of(dto));
     }
 

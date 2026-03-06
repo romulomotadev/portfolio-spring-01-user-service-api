@@ -4,6 +4,7 @@ import com.rpdevelopment.user_service_api.entity.Person;
 import com.rpdevelopment.user_service_api.entity.User;
 import com.rpdevelopment.user_service_api.tests.UserFactory;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,12 +16,20 @@ public class PersonRepositoryTest {
     @Autowired
     private PersonRepository personRepository;
 
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+
+        user = UserFactory.createValidUserWithId();
+
+    }
+
     //DOCUMENTO EXISTENTE
     @Test
     public void shouldReturnTrueWhenDocumentExists(){
 
         //Preparando
-        User user = UserFactory.createUser();
         Person person = user.getPerson();
         Person save = personRepository.save(person);
 
@@ -37,10 +46,9 @@ public class PersonRepositoryTest {
     public void shouldReturnTrueWhenDocumentExistsForAnotherId(){
 
         // Preparando
-        User user = UserFactory.createUser();
         Person person = personRepository.save(user.getPerson());
 
-        User user2 = UserFactory.createUser();
+        User user2 = UserFactory.createValidUserWithId();
         user2.setId(2L);
 
         // Ação

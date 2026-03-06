@@ -8,9 +8,15 @@ import static com.rpdevelopment.user_service_api.tests.UserFactory.*;
 
 public class UserFactoryDto {
 
-    //USER
-    public static UserPersonAddressDto createUserFactoryDto(){
-        User user = createUser();
-        return new UserPersonAddressDto(user);
+    // Para Services (Mockito)
+    public static UserPersonAddressDto createValidUserFactoryDto(){
+        User userValid  = createValidUserWithId();
+        return new UserPersonAddressDto(userValid);
+    }
+
+    // Para Repositories e Integração (@DataJpaTest)
+    public static UserPersonAddressDto createNewUserFactoryDto(){
+        User newUser = createNewUser();
+        return new UserPersonAddressDto(newUser);
     }
 }

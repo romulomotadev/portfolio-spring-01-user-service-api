@@ -4,12 +4,11 @@ import com.rpdevelopment.user_service_api.entity.User;
 import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
 import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

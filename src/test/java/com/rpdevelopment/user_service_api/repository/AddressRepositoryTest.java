@@ -4,6 +4,7 @@ import com.rpdevelopment.user_service_api.entity.Address;
 import com.rpdevelopment.user_service_api.entity.User;
 import com.rpdevelopment.user_service_api.tests.UserFactory;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -17,11 +18,19 @@ public class AddressRepositoryTest {
     @Autowired
     private AddressRepository addressRepository;
 
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+
+        user = UserFactory.createValidUserWithId();
+
+    }
+
     @Test
     public void shouldFindAddressByFields(){
 
         //PREPARANDO
-        User user = UserFactory.createUser();
         Address address = user.getAddresses().get(0);
         addressRepository.save(address);
 

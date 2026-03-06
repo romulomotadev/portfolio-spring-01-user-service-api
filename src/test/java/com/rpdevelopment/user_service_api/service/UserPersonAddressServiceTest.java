@@ -25,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +59,7 @@ public class UserPersonAddressServiceTest {
         nonExistingId = 1000L;
 
         //Criando Usuário
-        user = UserFactory.createUser();
+        user = UserFactory.createValidUserWithId();
     }
 
     // ================= GET =================
@@ -136,7 +135,7 @@ public class UserPersonAddressServiceTest {
     public void createShouldReturnUserDto(){
 
         //Preparando
-        UserPersonAddressDto userDto = UserFactoryDto.createUserFactoryDto();
+        UserPersonAddressDto userDto = UserFactoryDto.createValidUserFactoryDto();
         Mockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(user);
 
         //Ação
@@ -159,7 +158,7 @@ public class UserPersonAddressServiceTest {
     public void saveShouldThrowDuplicateResourceExceptionWhenEmailAlreadyExists(){
 
         //Preparando
-        UserPersonAddressDto duplicateEmailDto = UserFactoryDto.createUserFactoryDto();
+        UserPersonAddressDto duplicateEmailDto = UserFactoryDto.createValidUserFactoryDto();
         duplicateEmailDto.setEmail("duplicateEmail@gmail.com");
 
         Mockito.when(userRepository.existsByEmail("duplicateEmail@gmail.com")).thenReturn(true);
@@ -175,7 +174,7 @@ public class UserPersonAddressServiceTest {
     public void saveShouldThrowDuplicateResourceExceptionWhenDocumentAlreadyExists(){
 
         //Preparando
-        UserPersonAddressDto duplicateDocumentDto = UserFactoryDto.createUserFactoryDto();
+        UserPersonAddressDto duplicateDocumentDto = UserFactoryDto.createValidUserFactoryDto();
         duplicateDocumentDto.getPerson().setDocument("duplicateDocument");
 
         Mockito.when(personRepository.existsByDocument("duplicateDocument")).thenReturn(true);
@@ -194,7 +193,7 @@ public class UserPersonAddressServiceTest {
     public void updateByIdExistentShouldUpdateEntity() {
 
         //Preparando
-        UserPersonAddressDto updateDto = UserFactoryDto.createUserFactoryDto();
+        UserPersonAddressDto updateDto = UserFactoryDto.createValidUserFactoryDto();
 
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(user);
@@ -218,7 +217,7 @@ public class UserPersonAddressServiceTest {
     public void updateByIdNonExistenteThrowEntityNotFoundExceptionWhenIdDoesNotExist(){
 
         //Preparando
-        UserPersonAddressDto updateDto = UserFactoryDto.createUserFactoryDto();
+        UserPersonAddressDto updateDto = UserFactoryDto.createValidUserFactoryDto();
         Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         //Ação || Validação
@@ -232,7 +231,7 @@ public class UserPersonAddressServiceTest {
     public void updateShouldThrowDuplicateResourceExceptionWhenEmailAlreadyExists(){
 
         //Preparando
-        UserPersonAddressDto duplicateEmailDto = UserFactoryDto.createUserFactoryDto();
+        UserPersonAddressDto duplicateEmailDto = UserFactoryDto.createValidUserFactoryDto();
         duplicateEmailDto.setEmail("duplicateEmail@gmail.com");
 
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
@@ -251,7 +250,7 @@ public class UserPersonAddressServiceTest {
     public void updateShouldThrowDuplicateResourceExceptionWhenDocumentAlreadyExists(){
 
         //Preparando
-        UserPersonAddressDto duplicateDocumentDto = UserFactoryDto.createUserFactoryDto();
+        UserPersonAddressDto duplicateDocumentDto = UserFactoryDto.createValidUserFactoryDto();
         duplicateDocumentDto.getPerson().setDocument("duplicateDocument");
 
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
