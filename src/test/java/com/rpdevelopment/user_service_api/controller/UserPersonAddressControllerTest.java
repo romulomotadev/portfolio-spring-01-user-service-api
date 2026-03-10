@@ -147,7 +147,6 @@ public class UserPersonAddressControllerTest {
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.error").value("Email already exists"))
                 .andExpect(jsonPath("$.path").value("/users"));
-
     }
 
     //VALIDAÇÃO
