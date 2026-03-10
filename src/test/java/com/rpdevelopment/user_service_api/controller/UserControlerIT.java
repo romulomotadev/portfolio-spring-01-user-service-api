@@ -247,13 +247,13 @@ public class UserControlerIT {
         //Corpo da requisição
         String jsonBody = objectMapper.writeValueAsString(dto);
 
-        //PUT
+        //Chamada / Ação
         ResultActions resultActions = mockMvc.perform(put("/users/{id}", existingId)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
-        //RESPOSTA ESPERADA
+        //Validações
         resultActions.andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.error").value("Email already exists"))
@@ -272,17 +272,46 @@ public class UserControlerIT {
         //Corpo da requisição
         String jsonBody = objectMapper.writeValueAsString(dto);
 
-        //PUT
+        //Chamada / Ação
         ResultActions resultActions = mockMvc.perform(put("/users/{id}", existingId)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
-        //RESPOSTA ESPERADA
+        //Validações
         resultActions.andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.error").value("Document already exists"))
                 .andExpect(jsonPath("$.path").value("/users/" + existingId));
     }
 
+    //================== DELETE ==================
+
+    //ID EXISTENTE
+    @Test
+    public void deleteShouldReturn204WhenIdExists() throws Exception {
+
+        //Chamada / Ação
+        ResultActions resultActions =
+                mockMvc.perform(delete("/users/{id}", existingId)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        //Validações
+        resultActions.andExpect(status().isNoContent());
+    }
+
+    //ID NÃO EXISTENTE
+    @Test
+    public void deleteShouldReturn404WhenIdDoesNotExist() throws Exception {
+
+        //Chamada / Ação
+        ResultActions resultActions =
+                mockMvc.perform(delete("/users/{id}", nonExistingId)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        //Validações
+        resultActions.andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").exists());
+    }
 }
