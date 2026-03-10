@@ -33,3 +33,7 @@ INSERT INTO tb_address (road, number, neighborhood, complement, city, zip_code, 
 INSERT INTO tb_address (road, number, neighborhood, complement, city, zip_code, user_id) VALUES ('Rua Rio de Janeiro', '1500', 'Lourdes', 'Apto 901', 'Belo Horizonte', '30160042', 8);
 INSERT INTO tb_address (road, number, neighborhood, complement, city, zip_code, user_id) VALUES ('Rua São Paulo', '25', 'Centro', 'Apto 02', 'Divinópolis', '35500004', 9);
 INSERT INTO tb_address (road, number, neighborhood, complement, city, zip_code, user_id) VALUES ('Av. Afonso Pena', '4000', 'Mangabeiras', 'Cobertura', 'Belo Horizonte', '30210000', 10);
+
+-- ROLES
+INSERT INTO tb_role (authority) VALUES ('ROLE_USER');
+INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');

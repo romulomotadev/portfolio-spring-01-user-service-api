@@ -2,9 +2,7 @@ package com.rpdevelopment.user_service_api.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_user")
@@ -28,6 +26,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Address> addresses = new ArrayList<Address>();
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "tb_user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
     //Construtores
     public User() {
     }
@@ -45,6 +49,20 @@ public class User {
     public void addAddress(Address address) {
         this.addresses.add(address);
         address.setUser(this);
+    }
+
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
+    //verificar se possui perfil segurança
+    public boolean hasRole(String roleName) {
+        for (Role role : roles) {
+            if (role.getAuthority().equals(roleName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //Getter|Setter
@@ -100,6 +118,9 @@ public class User {
         return addresses;
     }
 
+    public Set<Role> getRole() {
+        return roles;
+    }
 
     //EQUALS | HASH CONDE - EMAIL
     @Override
