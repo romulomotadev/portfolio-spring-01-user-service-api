@@ -11,16 +11,16 @@ INSERT INTO tb_person (document, type) VALUES ('163.904.285-40', 'NATURAL_PERSON
 INSERT INTO tb_person (document, type) VALUES ('274.518.996-02', 'NATURAL_PERSON');
 
 -- user
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Pedro Henrique', 'pedro@gmail.com', '1990-06-01', '123456', 1);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Ana Paula', 'ana.paula@gmail.com', '1988-03-15', '123456', 2);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Mariana Silva', 'mariana.silva@gmail.com', '1995-08-10', '123456', 3);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Rafael Costa', 'rafael.costa@gmail.com', '1987-01-05', '123456', 4);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Juliana Mendes', 'juliana.m@gmail.com', '1993-04-18', '123456', 5);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Lucas Pereira', 'lucas.p@gmail.com', '1998-09-27', '123456', 6);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Fernanda Rocha', 'fernanda.rocha@gmail.com', '1991-12-30', '123456', 7);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Bruno Alves', 'bruno.alves@gmail.com', '1989-07-14', '123456', 8);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Camila Nogueira', 'camila.n@gmail.com', '1996-05-02', '123456', 9);
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Diego Martins', 'diego.m@gmail.com', '1985-10-09', '123456', 10);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Pedro Henrique', 'pedro@gmail.com', '1990-06-01', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 1);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Ana Paula', 'ana.paula@gmail.com', '1988-03-15', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 2);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Mariana Silva', 'mariana.silva@gmail.com', '1995-08-10', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 3);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Rafael Costa', 'rafael.costa@gmail.com', '1987-01-05', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 4);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Juliana Mendes', 'juliana.m@gmail.com', '1993-04-18', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 5);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Lucas Pereira', 'lucas.p@gmail.com', '1998-09-27', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 6);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Fernanda Rocha', 'fernanda.rocha@gmail.com', '1991-12-30', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 7);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Bruno Alves', 'bruno.alves@gmail.com', '1989-07-14', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 8);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Camila Nogueira', 'camila.n@gmail.com', '1996-05-02', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 9);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Diego Martins', 'diego.m@gmail.com', '1985-10-09', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 10);
 
 -- address
 INSERT INTO tb_address (road, number, neighborhood, complement, city, zip_code, user_id) VALUES ('Rua Cananeia', '65', 'Canaã', 'Apto 04', 'Sete Lagoas', '35700303', 1);
