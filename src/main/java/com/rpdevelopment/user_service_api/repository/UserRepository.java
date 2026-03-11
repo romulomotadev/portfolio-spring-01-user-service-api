@@ -2,6 +2,7 @@ package com.rpdevelopment.user_service_api.repository;
 
 import com.rpdevelopment.user_service_api.entity.User;
 import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
+import com.rpdevelopment.user_service_api.projection.UserDetailsProjection;
 import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -39,4 +42,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //EMAIL EXIST - ID NOT
     boolean existsByEmailAndIdNot(String email, Long id);
 
+    //BUSCA DE AUTORIZAÇÃO DO USUÁRIO
+    @Query(nativeQuery = true, value = """
+            SELECT tb_user.email AS username, tb_user.password, tb_role.id AS roleId, tb_role.authority
+            FROM tb_user
+            INNER JOIN tb_user_role ON tb_user.id = tb_user_role.user_id
+            INNER JOIN tb_role ON tb_role.id = tb_user_role.role_id
+            WHERE tb_user.email = :email
+            """)
+    List<UserDetailsProjection> searchUserAndRolesByEmail(String email);
 }

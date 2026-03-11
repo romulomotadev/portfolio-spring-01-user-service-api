@@ -35,5 +35,17 @@ INSERT INTO tb_address (road, number, neighborhood, complement, city, zip_code, 
 INSERT INTO tb_address (road, number, neighborhood, complement, city, zip_code, user_id) VALUES ('Av. Afonso Pena', '4000', 'Mangabeiras', 'Cobertura', 'Belo Horizonte', '30210000', 10);
 
 -- ROLES
-INSERT INTO tb_role (authority) VALUES ('ROLE_USER');
 INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
+INSERT INTO tb_role (authority) VALUES ('ROLE_USER');
+
+-- PERFIL
+INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (3, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (4, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (5, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (6, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (7, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (8, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (9, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (10, 2);

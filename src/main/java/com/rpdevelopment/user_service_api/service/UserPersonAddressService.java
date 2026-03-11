@@ -4,10 +4,12 @@ import com.rpdevelopment.user_service_api.dto.AddressDto;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
 import com.rpdevelopment.user_service_api.entity.Address;
 import com.rpdevelopment.user_service_api.entity.Person;
+import com.rpdevelopment.user_service_api.entity.Role;
 import com.rpdevelopment.user_service_api.entity.User;
 import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
 import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
 import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
+import com.rpdevelopment.user_service_api.projection.UserDetailsProjection;
 import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
 import com.rpdevelopment.user_service_api.repository.AddressRepository;
 import com.rpdevelopment.user_service_api.repository.PersonRepository;
@@ -15,13 +17,17 @@ import com.rpdevelopment.user_service_api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserPersonAddressService {
+public class UserPersonAddressService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -180,4 +186,20 @@ public class UserPersonAddressService {
         address.setZipCode(addressDto.getZipCode());
     }
 
+    //Implementando Segurança
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        List<UserDetailsProjection> result = userRepository.searchUserAndRolesByEmail(username);
+        if(result.size()==0){ throw new UsernameNotFoundException(username);}
+
+        User user = new User();
+        user.setEmail(username);
+        user.setPassword(result.get(0).getPassword());
+
+        for(UserDetailsProjection projections : result){
+            user.addRole(new Role(projections.getId(), projections.getAuthority()));
+        }
+
+        return user;
+    }
 }
