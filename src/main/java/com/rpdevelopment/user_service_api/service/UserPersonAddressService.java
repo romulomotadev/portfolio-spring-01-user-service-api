@@ -17,9 +17,12 @@ import com.rpdevelopment.user_service_api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -186,18 +189,20 @@ public class UserPersonAddressService implements UserDetailsService {
         address.setZipCode(addressDto.getZipCode());
     }
 
-    //Implementando Segurança
+    //Implementando Segurança (UserDetailsService)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         List<UserDetailsProjection> result = userRepository.searchUserAndRolesByEmail(username);
-        if(result.size()==0){ throw new UsernameNotFoundException(username);}
+        if (result.size() == 0) {
+            throw new UsernameNotFoundException("Email not found");
+        }
 
         User user = new User();
-        user.setEmail(username);
+        user.setEmail(result.get(0).getUsername());
         user.setPassword(result.get(0).getPassword());
-
-        for(UserDetailsProjection projections : result){
-            user.addRole(new Role(projections.getId(), projections.getAuthority()));
+        for (UserDetailsProjection projection : result) {
+            user.addRole(new Role(projection.getRoleId(), projection.getAuthority()));
         }
 
         return user;

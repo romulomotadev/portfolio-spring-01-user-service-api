@@ -3,7 +3,7 @@ package com.rpdevelopment.user_service_api.config.customgrant;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -50,68 +50,78 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 		this.userDetailsService = userDetailsService;
 		this.passwordEncoder = passwordEncoder;
 	}
-
+	
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		CustomPasswordAuthenticationToken customPasswordAuth = (CustomPasswordAuthenticationToken) authentication;
-
-		// 1. Validar Cliente
-		OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(customPasswordAuth);
+		
+		CustomPasswordAuthenticationToken customPasswordAuthenticationToken = (CustomPasswordAuthenticationToken) authentication;
+		OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(customPasswordAuthenticationToken);
 		RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
-
-		// 2. Validar Usuário
-		UserDetails user;
+		username = customPasswordAuthenticationToken.getUsername();
+		password = customPasswordAuthenticationToken.getPassword();	
+		
+		UserDetails user = null;
 		try {
-			user = userDetailsService.loadUserByUsername(customPasswordAuth.getUsername());
+			user = userDetailsService.loadUserByUsername(username);
 		} catch (UsernameNotFoundException e) {
-			throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_GRANT);
+			throw new OAuth2AuthenticationException("Invalid credentials");
 		}
-
-		if (!passwordEncoder.matches(customPasswordAuth.getPassword(), user.getPassword())) {
-			throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_GRANT);
+				
+		if (!passwordEncoder.matches(password, user.getPassword()) || !user.getUsername().equals(username)) {
+			throw new OAuth2AuthenticationException("Invalid credentials");
 		}
-
-		// 3. Escopos
-		Set<String> authorizedScopes = user.getAuthorities().stream()
-				.map(GrantedAuthority::getAuthority)
+		
+		authorizedScopes = user.getAuthorities().stream()
+				.map(scope -> scope.getAuthority())
 				.filter(scope -> registeredClient.getScopes().contains(scope))
 				.collect(Collectors.toSet());
-
-		// 4. Preparar Contexto do Token (Sem mexer no SecurityContextHolder!)
+		
+		//-----------Create a new Security Context Holder Context----------
+		OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(username, user.getAuthorities());
+		oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
+		
+		var newcontext = SecurityContextHolder.createEmptyContext();
+		newcontext.setAuthentication(oAuth2ClientAuthenticationToken);
+		SecurityContextHolder.setContext(newcontext);		
+		
+		//-----------TOKEN BUILDERS----------
 		DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
 				.registeredClient(registeredClient)
-				.principal(clientPrincipal) // O cliente autenticado é o principal aqui
+				.principal(clientPrincipal)
 				.authorizationServerContext(AuthorizationServerContextHolder.getContext())
 				.authorizedScopes(authorizedScopes)
 				.authorizationGrantType(new AuthorizationGrantType("password"))
-				.authorizationGrant(customPasswordAuth);
-
-		// 5. Gerar Access Token
+				.authorizationGrant(customPasswordAuthenticationToken);
+		
+		OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
+				.attribute(Principal.class.getName(), clientPrincipal)
+				.principalName(clientPrincipal.getName())
+				.authorizationGrantType(new AuthorizationGrantType("password"))
+				.authorizedScopes(authorizedScopes);
+		
+		//-----------ACCESS TOKEN----------
 		OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();
 		OAuth2Token generatedAccessToken = this.tokenGenerator.generate(tokenContext);
-
 		if (generatedAccessToken == null) {
-			throw new OAuth2AuthenticationException(OAuth2ErrorCodes.SERVER_ERROR);
+			OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
+					"The token generator failed to generate the access token.", ERROR_URI);
+			throw new OAuth2AuthenticationException(error);
 		}
 
-		OAuth2AccessToken accessToken = new OAuth2AccessToken(
-				OAuth2AccessToken.TokenType.BEARER,
-				generatedAccessToken.getTokenValue(),
-				generatedAccessToken.getIssuedAt(),
-				generatedAccessToken.getExpiresAt(),
-				tokenContext.getAuthorizedScopes());
-
-		// 6. Construir Objeto de Autorização para Salvar
-		OAuth2Authorization authorization = OAuth2Authorization.withRegisteredClient(registeredClient)
-				.principalName(user.getUsername()) // Nome do usuário final
-				.authorizationGrantType(new AuthorizationGrantType("password"))
-				.authorizedScopes(authorizedScopes)
-				.token(accessToken)
-				.attribute(Principal.class.getName(), clientPrincipal)
-				.build();
-
+		OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
+				generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(),
+				generatedAccessToken.getExpiresAt(), tokenContext.getAuthorizedScopes());
+		if (generatedAccessToken instanceof ClaimAccessor) {
+			authorizationBuilder.token(accessToken, (metadata) ->
+					metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, ((ClaimAccessor) generatedAccessToken).getClaims()));
+		} else {
+			authorizationBuilder.accessToken(accessToken);
+		}
+				
+		OAuth2Authorization authorization = authorizationBuilder.build();
 		this.authorizationService.save(authorization);
-
+		
 		return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken);
 	}
 

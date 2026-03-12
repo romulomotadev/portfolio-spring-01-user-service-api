@@ -40,7 +40,9 @@ INSERT INTO tb_role (authority) VALUES ('ROLE_USER');
 
 -- PERFIL
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (3, 2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (4, 2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (5, 2);

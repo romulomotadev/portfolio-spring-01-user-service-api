@@ -21,6 +21,7 @@ public class User implements UserDetails {
     private LocalDate birthDate;
     private String password;
 
+
     //Atributos associados
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "person_id")
@@ -35,6 +36,7 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+
     //Construtores
     public User() {
     }
@@ -48,17 +50,20 @@ public class User implements UserDetails {
         this.person = person;
     }
 
+
     //Métodos
+    //Adicionar endereço
     public void addAddress(Address address) {
         this.addresses.add(address);
         address.setUser(this);
     }
 
+    //Adicionar tipo e permissão ao usuário
     public void addRole(Role role) {
         roles.add(role);
     }
 
-    //verificar se possui perfil segurança
+    //Verificar se possui perfil segurança
     public boolean hasRole(String roleName) {
         for (Role role : roles) {
             if (role.getAuthority().equals(roleName)) {
@@ -67,6 +72,7 @@ public class User implements UserDetails {
         }
         return false;
     }
+
 
     //Getter|Setter
     public Long getId() {
@@ -83,6 +89,10 @@ public class User implements UserDetails {
 
     public void setName(String user) {
         this.name = user;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
@@ -117,19 +127,30 @@ public class User implements UserDetails {
         return addresses;
     }
 
-    public Set<Role> getRole() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
 
-    //Implementação segurança
+    //EQUALS | HASH CONDE - EMAIL
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(email);
+    }
+
+
+    //Implementação segurança (UserDetails)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     @Override
@@ -155,20 +176,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-
-    //EQUALS | HASH CONDE - EMAIL
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(email, user.email);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(email);
     }
 }
