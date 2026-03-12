@@ -12,9 +12,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
 
     //SEARCH USER DOCUMENT
     @Query(nativeQuery = true, value = "SELECT TB_USER.NAME, TB_USER.EMAIL, TB_PERSON.DOCUMENT " +
@@ -24,6 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                     "FROM TB_USER " +
                     "INNER JOIN TB_PERSON ON TB_USER.PERSON_ID = TB_PERSON.ID")
     Page<UserDocumentProjection> searchUserDocument(Pageable pageable);
+
 
     //SEARCH USER ADDRESS
     @Query(nativeQuery = true, value = "SELECT TB_USER.NAME, TB_USER.EMAIL, " +
@@ -42,15 +45,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //EMAIL EXIST - ID NOT
     boolean existsByEmailAndIdNot(String email, Long id);
 
-    //BUSCA DE AUTORIZAÇÃO DO USUÁRIO
-/*    @Query(nativeQuery = true, value = "SELECT TB_USER.EMAIL AS USERNAME, " +
-            "TB_USER.PASSWORD, TB_ROLE.ID AS ROLEID, TB_ROLE.AUTHORITY " +
-            "FROM TB_USER " +
-            "INNER JOIN TB_USER_ROLE ON TB_USER.ID = TB_USER_ROLE.USER_ID " +
-            "INNER JOIN TB_ROLE ON TB_ROLE.ID = TB_USER_ROLE.ROLE_ID " +
-            "WHERE TB_USER.EMAIL = :email")
-    List<UserDetailsProjection> searchUserAndRolesByEmail(String email);*/
 
+    //PERMISSÕES DE USUÁRIO
     @Query(nativeQuery = true, value = """
             SELECT tb_user.email AS username, tb_user.password, tb_role.id AS roleId, tb_role.authority
             FROM tb_user
@@ -59,4 +55,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             WHERE tb_user.email = :email
         """)
     List<UserDetailsProjection> searchUserAndRolesByEmail(String email);
+
+
+    //USUÁRIO LOGADO
+    Optional<User> findByEmail(String username);
 }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,6 +39,9 @@ public class UserPersonAddressDto {
     @Valid
     private List<AddressDto> addresses = new ArrayList<AddressDto>();
 
+    private List<String> roles = new ArrayList<>();
+
+
     //Construtores
     public UserPersonAddressDto() {
     }
@@ -64,12 +68,20 @@ public class UserPersonAddressDto {
         for (Address address : entity.getAddresses()) {
             this.addresses.add(new AddressDto(address));
         }
+
+        //Obter usuários locagos
+        for (GrantedAuthority role : entity.getRoles()) {
+            this.roles.add(role.getAuthority());
+        }
+
     }
+
 
     //Métodos
     public void addAddresses(List<AddressDto> addresses) {
         this.addresses.addAll(addresses);
     }
+
 
     //Getter
     public Long getId() {

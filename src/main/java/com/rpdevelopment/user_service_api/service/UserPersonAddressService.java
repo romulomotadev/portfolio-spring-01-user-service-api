@@ -189,7 +189,8 @@ public class UserPersonAddressService implements UserDetailsService {
         address.setZipCode(addressDto.getZipCode());
     }
 
-    //Implementando Segurança (UserDetailsService)
+
+    //SEGURANÇA (UserDetailsService)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -206,5 +207,25 @@ public class UserPersonAddressService implements UserDetailsService {
         }
 
         return user;
+    }
+
+    //USUÁRIO LOGADO
+    protected User authenticated(){
+        try{
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
+            String username = jwtPrincipal.getClaim("username");
+            return userRepository.findByEmail(username).get();
+
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("Email not found");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public UserPersonAddressDto getMe(){
+        User user = authenticated();
+        return new UserPersonAddressDto(user);
     }
 }
