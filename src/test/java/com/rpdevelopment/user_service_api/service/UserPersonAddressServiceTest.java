@@ -44,6 +44,8 @@ public class UserPersonAddressServiceTest {
     private PersonRepository personRepository;
     @Mock
     private AddressRepository addressRepository;
+    @Mock
+    private AuthService authService;
 
     private Long existingId;
     private Long nonExistingId;

@@ -37,8 +37,6 @@ public class UserControlerIT {
 
     @Autowired
     private UserPersonAddressService service;
-    @Autowired
-    private UserRepository repository;
 
     @Autowired
     private TokenUtil tokenUtil;
@@ -58,6 +56,7 @@ public class UserControlerIT {
         nonExistingId = 1000L;
         dto = UserFactoryDto.createNewUserFactoryDto();
 
+        //Inicialização token user admin
         username = "pedro@gmail.com";
         password = "123456";
 

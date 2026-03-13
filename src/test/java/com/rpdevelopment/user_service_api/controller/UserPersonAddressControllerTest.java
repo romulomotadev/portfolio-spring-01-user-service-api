@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
 import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
 import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
+import com.rpdevelopment.user_service_api.service.AuthService;
 import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 
@@ -27,24 +28,33 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(UserPersonAddressController.class)
+@WebMvcTest(value = UserPersonAddressController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 public class UserPersonAddressControllerTest {
+
+
+    //================== DEPENDÊNCIAS ==================
+
+    @MockBean
+    private UserPersonAddressService service;
+    @MockBean
+    private AuthService authService;
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private UserPersonAddressDto dto;
+
+
+    //================== ATRIBUTOS ==================
 
     private Long existingId;
     private Long nonExistingId;
     private PageImpl<UserPersonAddressDto> pageDto;
 
-    //DEPENDENTES
-    @MockBean
-    private UserPersonAddressService service;
 
-    private UserPersonAddressDto dto;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    //============ INICIALIZAR ATRIBUTOS ============
 
     @BeforeEach
     void setUp() throws Exception {
@@ -78,6 +88,7 @@ public class UserPersonAddressControllerTest {
                 .andExpect(jsonPath("$.addresses[1].road").value("Rua A"));
     }
 
+
     //GET ID NÃO EXISTENTE
     @Test
     public void findByIdShouldReturn404WhenIdDoesNotExist() throws Exception {
@@ -97,6 +108,7 @@ public class UserPersonAddressControllerTest {
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(jsonPath("$.path").value("/users/" + nonExistingId));
     }
+
 
     // ================= CREATE =================
 
@@ -126,6 +138,7 @@ public class UserPersonAddressControllerTest {
                 .andExpect(jsonPath("$.addresses[1].road").value("Rua A"));
     }
 
+
     //CREATE EMAIL DUPLICADO
     @Test
     public void createShouldReturn409WhenEmailAlreadyExists() throws Exception {
@@ -149,6 +162,7 @@ public class UserPersonAddressControllerTest {
                 .andExpect(jsonPath("$.error").value("Email already exists"))
                 .andExpect(jsonPath("$.path").value("/users"));
     }
+
 
     //VALIDAÇÃO
     @Test
@@ -183,7 +197,9 @@ public class UserPersonAddressControllerTest {
         Mockito.verify(service, Mockito.never()).save(Mockito.any());
     }
 
+
     // ================= UPDATE =================
+
     //UPDATE ID EXISTENTE
     @Test
     public void updateShouldReturn200AndUpdatedUserWhenIdExists() throws Exception {
@@ -212,6 +228,7 @@ public class UserPersonAddressControllerTest {
                 .andExpect(jsonPath("$.person.document").value("507.332.198-64"))
                 .andExpect(jsonPath("$.addresses[1].road").value("Rua A"));
     }
+
 
     //UPDATE ID NÃO EXISTENTE
     @Test
@@ -245,6 +262,7 @@ public class UserPersonAddressControllerTest {
                 .update(Mockito.any(UserPersonAddressDto.class), eq(nonExistingId));
     }
 
+
     //UPDATE EMAIL DUPLICADO
     @Test
     public void updateShouldReturn409WhenEmailAlreadyExists() throws Exception{
@@ -273,6 +291,7 @@ public class UserPersonAddressControllerTest {
         Mockito.verify(service)
                 .update(Mockito.any(UserPersonAddressDto.class), eq(existingId));
     }
+
 
     //UPDATE VALIDAÇÃO
     @Test
@@ -307,7 +326,9 @@ public class UserPersonAddressControllerTest {
                 .update(Mockito.any(UserPersonAddressDto.class), Mockito.any());
     }
 
+
     // ================= DELETE =================
+
     //DELETE ID EXISTENTE
     @Test
     public void deleteShouldReturn204WhenIdExists() throws Exception {
@@ -324,6 +345,7 @@ public class UserPersonAddressControllerTest {
 
         Mockito.verify(service).delete(existingId);
     }
+
 
     //DELETE ID NÃO EXISTENTE
     @Test
@@ -346,7 +368,9 @@ public class UserPersonAddressControllerTest {
         Mockito.verify(service).delete(nonExistingId);
     }
 
+
     // ================= PAGINAÇÃO =================
+
     //PAGINAÇÃO
     @Test
     public void findAllShouldReturnPagedUsers() throws Exception {
