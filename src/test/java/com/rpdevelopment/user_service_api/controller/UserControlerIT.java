@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
 import com.rpdevelopment.user_service_api.repository.UserRepository;
 import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
+import com.rpdevelopment.user_service_api.tests.TokenUtil;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,19 +40,28 @@ public class UserControlerIT {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private TokenUtil tokenUtil;
+
     //================== ATRIBUTOS ==================
 
     private Long existingId;
     private Long nonExistingId;
     private UserPersonAddressDto dto;
+    private String username, password, bearerToken;
 
     //============ INICIALIZAR ATRIBUTOS ============
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         existingId = 1L;
         nonExistingId = 1000L;
         dto = UserFactoryDto.createNewUserFactoryDto();
+
+        username = "pedro@gmail.com";
+        password = "123456";
+
+        bearerToken = tokenUtil.obtainAccessToken(mockMvc,username,password);
     }
 
     //================== CREATE ==================
@@ -66,9 +76,11 @@ public class UserControlerIT {
         //Chamada / Ação
         ResultActions resultActions = mockMvc
                 .perform(post("/users")
-                .content(requestBody)
+                        .header("Authorization", "Bearer " + bearerToken)
+                        .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
+
 
         //Validações
         resultActions.andExpect(status().isCreated())
@@ -93,6 +105,7 @@ public class UserControlerIT {
 
         //Chamada / Ação
         ResultActions resultActions = mockMvc.perform(post("/users")
+                .header("Authorization", "Bearer " + bearerToken)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -116,6 +129,7 @@ public class UserControlerIT {
 
         //Chamada / Ação
         ResultActions resultActions = mockMvc.perform(post("/users")
+                .header("Authorization", "Bearer " + bearerToken)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -140,6 +154,7 @@ public class UserControlerIT {
         //Chamada / Ação
         ResultActions resultActions =
                 mockMvc.perform(get("/users/{id}", idParaBuscar)
+                        .header("Authorization", "Bearer " + bearerToken)
                         .accept(MediaType.APPLICATION_JSON));
 
         //Validações
@@ -159,6 +174,7 @@ public class UserControlerIT {
         //Chamada / Ação
         ResultActions resultActions =
                 mockMvc.perform(get("/users/{id}", nonExistingId)
+                        .header("Authorization", "Bearer " + bearerToken)
                         .accept(MediaType.APPLICATION_JSON));
 
         //Validações
@@ -175,6 +191,7 @@ public class UserControlerIT {
         //Chamada / Ação
         ResultActions resultActions =
                 mockMvc.perform(get("/users")
+                        .header("Authorization", "Bearer " + bearerToken)
                         .param("page", "0")
                         .param("size", "1")
                         .accept(MediaType.APPLICATION_JSON));
@@ -204,6 +221,7 @@ public class UserControlerIT {
         //Chamada / Ação
         ResultActions resultActions =
                 mockMvc.perform(put("/users/{id}", existingId)
+                        .header("Authorization", "Bearer " + bearerToken)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
@@ -227,6 +245,7 @@ public class UserControlerIT {
         //Chamada / Ação
         ResultActions resultActions =
                 mockMvc.perform(put("/users/{id}", nonExistingId)
+                        .header("Authorization", "Bearer " + bearerToken)
                         .content(jsonBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON));
@@ -252,6 +271,7 @@ public class UserControlerIT {
 
         //Chamada / Ação
         ResultActions resultActions = mockMvc.perform(put("/users/{id}", existingId)
+                .header("Authorization", "Bearer " + bearerToken)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -277,6 +297,7 @@ public class UserControlerIT {
 
         //Chamada / Ação
         ResultActions resultActions = mockMvc.perform(put("/users/{id}", existingId)
+                .header("Authorization", "Bearer " + bearerToken)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -297,6 +318,7 @@ public class UserControlerIT {
         //Chamada / Ação
         ResultActions resultActions =
                 mockMvc.perform(delete("/users/{id}", existingId)
+                        .header("Authorization", "Bearer " + bearerToken)
                         .accept(MediaType.APPLICATION_JSON));
 
         //Validações
@@ -310,6 +332,7 @@ public class UserControlerIT {
         //Chamada / Ação
         ResultActions resultActions =
                 mockMvc.perform(delete("/users/{id}", nonExistingId)
+                        .header("Authorization", "Bearer " + bearerToken)
                         .accept(MediaType.APPLICATION_JSON));
 
         //Validações
