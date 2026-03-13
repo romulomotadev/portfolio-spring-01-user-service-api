@@ -38,6 +38,9 @@ public class UserPersonAddressService implements UserDetailsService {
     private AddressRepository addressRepository;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private AuthService authService;
+
 
     //CRUD PADRÃO
     // FIND ALL
@@ -51,6 +54,11 @@ public class UserPersonAddressService implements UserDetailsService {
     public UserPersonAddressDto usersFindById (Long id) {
         User user = userRepository.findById(id).orElseThrow(
                 ()-> new ResourceNotFoundException("Id Not Found"));
+
+        //Bloquear users ids se não for admin
+        //Bloquear user id, se não for o mesmo logado
+        authService.validateSelfOrAdmin(user.getId());
+
         return new UserPersonAddressDto(user);
     }
 
@@ -207,25 +215,5 @@ public class UserPersonAddressService implements UserDetailsService {
         }
 
         return user;
-    }
-
-    //USUÁRIO LOGADO
-    protected User authenticated(){
-        try{
-
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
-            String username = jwtPrincipal.getClaim("username");
-            return userRepository.findByEmail(username).get();
-
-        } catch (Exception e) {
-            throw new UsernameNotFoundException("Email not found");
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public UserPersonAddressDto getMe(){
-        User user = authenticated();
-        return new UserPersonAddressDto(user);
     }
 }

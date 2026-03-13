@@ -3,6 +3,7 @@ package com.rpdevelopment.user_service_api.handler;
 import com.rpdevelopment.user_service_api.dto.error.CustomErrorDto;
 import com.rpdevelopment.user_service_api.dto.error.ValidateErrorDto;
 import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
+import com.rpdevelopment.user_service_api.exception.ForbiddenException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
@@ -62,6 +63,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
+    //TRATANDO DADOS DUPLICADOS
     @ExceptionHandler(DuplicateResourceException.class)
     private ResponseEntity<CustomErrorDto> duplicateResourceException(DuplicateResourceException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
@@ -71,6 +73,14 @@ public class ControllerExceptionHandler {
                 e.getMessage(),
                 request.getRequestURI()
         );
+        return ResponseEntity.status(status).body(err);
+    }
+
+    //TRATANDO AUTORIZAÇÃO
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomErrorDto> forbidden(ForbiddenException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomErrorDto err = new CustomErrorDto(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 

@@ -58,12 +58,12 @@ public class User implements UserDetails {
         address.setUser(this);
     }
 
-    //Adicionar tipo e permissão ao usuário
+    //Adicionar permissão ao usuário
     public void addRole(Role role) {
         roles.add(role);
     }
 
-    //Verificar se possui perfil segurança
+    //Verificar perfil do usuário
     public boolean hasRole(String roleName) {
         for (Role role : roles) {
             if (role.getAuthority().equals(roleName)) {
@@ -147,7 +147,7 @@ public class User implements UserDetails {
     }
 
 
-    //Implementação segurança (UserDetails)
+    //SEGURANÇA (UserDetails)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;

@@ -3,6 +3,7 @@ package com.rpdevelopment.user_service_api.controller;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
 import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
 import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
+import com.rpdevelopment.user_service_api.service.AuthService;
 import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class UserPersonAddressController {
 
     @Autowired
     private UserPersonAddressService service;
+
+    @Autowired
+    private AuthService authService;
 
     //CRUD PADRÃO
     //FIND ALL
@@ -85,7 +89,7 @@ public class UserPersonAddressController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping(value = "/me")
     public ResponseEntity<UserPersonAddressDto> findMe() {
-        UserPersonAddressDto dto = service.getMe();
+        UserPersonAddressDto dto = authService.getMe();
         return ResponseEntity.ok(dto);
     }
 }
