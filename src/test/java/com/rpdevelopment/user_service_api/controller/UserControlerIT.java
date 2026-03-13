@@ -6,15 +6,18 @@ import com.rpdevelopment.user_service_api.repository.UserRepository;
 import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -313,5 +316,74 @@ public class UserControlerIT {
         resultActions.andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").exists());
+    }
+
+
+    //================== SECURITY ==================
+
+    @Test
+    @DisplayName("Deve retornar 200 quando Admin acessa lista de usuários")
+    public void findAllShouldReturnOkWhenAdminIsLogged() throws Exception {
+
+        ////Chamada / Ação / Verificação
+        ResultActions resultActions =
+            mockMvc.perform(get("/users")
+                            .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))) // Simula o JWT
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Deve retornar 403 quando Usuário comum tenta acessar lista de usuários")
+    public void findAllShouldReturnForbiddenWhenUserIsLogged() throws Exception {
+
+        mockMvc.perform(get("/users")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_USER")))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Deve retornar 401 quando não há usuário logado")
+    public void findAllShouldReturnUnauthorizedWhenNoUser() throws Exception {
+
+        ////Chamada / Ação / Verificação
+        ResultActions resultActions =
+            mockMvc.perform(get("/users")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    @DisplayName("Deve retornar 200 quando Usuário comum acessa o SEU PRÓPRIO ID")
+    public void findByIdShouldReturnOkWhenUserAccessSelfId() throws Exception {
+        Long selfId = 1L;
+        String selfEmail = "pedro@gmail.com";
+
+        ////Chamada / Ação / Verificação
+        ResultActions resultActions =
+            mockMvc.perform(get("/users/{id}", selfId)
+                            .with(jwt()
+                                    .jwt(builder -> builder.claim("username", selfEmail)) // Define o email no token
+                                    .authorities(new SimpleGrantedAuthority("ROLE_USER")))
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        }
+
+    @Test
+    @DisplayName("Deve retornar 403 quando Usuário comum tenta acessar ID de OUTRO usuário")
+    public void findByIdShouldReturnForbiddenWhenUserAccessOtherId() throws Exception {
+        Long otherId = 2L;
+        String myEmail = "diego.m@gmail.com"; // Eu sou o Diego (ID 10), tentando ver o ID 2
+
+        ////Chamada / Ação / Verificação
+        ResultActions resultActions =
+            mockMvc.perform(get("/users/{id}", otherId)
+                            .with(jwt()
+                                    .jwt(builder -> builder.claim("username", myEmail))
+                                    .authorities(new SimpleGrantedAuthority("ROLE_USER")))
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isForbidden());
     }
 }
