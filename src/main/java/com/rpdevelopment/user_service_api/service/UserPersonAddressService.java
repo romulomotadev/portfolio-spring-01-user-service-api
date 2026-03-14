@@ -14,15 +14,11 @@ import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
 import com.rpdevelopment.user_service_api.repository.AddressRepository;
 import com.rpdevelopment.user_service_api.repository.PersonRepository;
 import com.rpdevelopment.user_service_api.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,22 +28,32 @@ import java.util.Optional;
 @Service
 public class UserPersonAddressService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AddressRepository addressRepository;
-    @Autowired
-    private PersonRepository personRepository;
-    @Autowired
-    private AuthService authService;
+    //================ DEPENDÊNCIAS =====================
+
+    private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final PersonRepository personRepository;
+    private final AuthService authService;
 
 
-    //CRUD PADRÃO
+    //================ CONSTRUTOR =====================
+
+    public UserPersonAddressService(UserRepository userRepository, AddressRepository addressRepository, PersonRepository personRepository, AuthService authService) {
+        this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
+        this.personRepository = personRepository;
+        this.authService = authService;
+    }
+
+
+    //================ GET =====================
+
     // FIND ALL
     @Transactional(readOnly = true)
     public Page<UserPersonAddressDto> usersFindAll (Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
         return users.map(UserPersonAddressDto::new); }
+
 
     //FIND BY ID
     @Transactional(readOnly = true)
@@ -55,46 +61,53 @@ public class UserPersonAddressService implements UserDetailsService {
         User user = userRepository.findById(id).orElseThrow(
                 ()-> new ResourceNotFoundException("Id Not Found"));
 
-        //Bloquear users ids se não for admin
-        //Bloquear user id, se não for o mesmo logado
+        //Bloquear user não admin, e user diferente do logado
         authService.validateSelfOrAdmin(user.getId());
-
         return new UserPersonAddressDto(user);
     }
 
-    //QUERY USER DOCUMENT
+
+    //================ QUERY USER DOCUMENT =====================
+
     @Transactional(readOnly = true)
     public Page<UserDocumentProjection> searchUserDocument(Pageable pageable) {
-        Page<UserDocumentProjection> userDocument = userRepository.searchUserDocument(pageable);
-        return userDocument;
+        return userRepository.searchUserDocument(pageable);
     }
 
-    //QUERY USER ADDRESS
+
+    //================ QUERY USER ADDRESS =====================
+
     @Transactional(readOnly = true)
     public Page<UserAddressProjection> searchUserAddress(Pageable pageable) {
-        Page<UserAddressProjection> userAddress = userRepository.searchUserAddress(pageable);
-        return userAddress;
+        return userRepository.searchUserAddress(pageable);
     }
 
-    //SAVE
+
+    //================ SAVE =====================
+
     @Transactional
     public UserPersonAddressDto save (UserPersonAddressDto userPersonAddressDto) {
 
+        //Email existe no banco?
         if (userRepository.existsByEmail(userPersonAddressDto.getEmail())) {
             throw new DuplicateResourceException("Email already exists");
         }
 
+        //Documento existe no banco?
         if (personRepository.existsByDocument(userPersonAddressDto.getPerson().getDocument())){
             throw new DuplicateResourceException("Document already exists");
         }
 
+        //Preparando User
         User user = new User();
         copyUserDtoToUser(userPersonAddressDto, user);
         Person person = new Person();
 
+        //Preparando Person
         copyPersonDtotoPerson(userPersonAddressDto, person);
         user.setPerson(person);
 
+        //Preparando Addresses
         if (userPersonAddressDto.getAddresses() != null){
             for(AddressDto addressDto : userPersonAddressDto.getAddresses()){
 
@@ -106,52 +119,62 @@ public class UserPersonAddressService implements UserDetailsService {
         User savedUser = userRepository.save(user);
         return new UserPersonAddressDto(savedUser); }
 
-    //UPDATE
+
+    //================ UPDATE =====================
+
     @Transactional
     public UserPersonAddressDto update(UserPersonAddressDto userPersonAddressDto, Long id) {
 
+        //User existe no banco?
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Id Not Found"));
 
+        //E-mail no banco?
         if (userRepository.existsByEmailAndIdNot(userPersonAddressDto.getEmail(), id)) {
             throw new DuplicateResourceException("Email already exists");
         }
+
+        //Documento existe no banco?
+        if (personRepository.existsByDocumentAndIdNot(userPersonAddressDto.getPerson().getDocument(), id)){
+            throw new DuplicateResourceException("Document already exists");
+        }
+
         copyUserDtoToUser(userPersonAddressDto, user);
 
+        //Preparando Person
         Person person = user.getPerson();
         if (person == null) {
             person = new Person();
         }
-        if (personRepository.existsByDocumentAndIdNot(userPersonAddressDto.getPerson().getDocument(), id)){
-            throw new DuplicateResourceException("Document already exists");
-        }
         copyPersonDtotoPerson(userPersonAddressDto, person);
         user.setPerson(person);
 
-        // limpa os endereços atuais
+        // Preparando addresses
         user.getAddresses().clear();
         if (userPersonAddressDto.getAddresses() != null) {
-            for (AddressDto addressDto : userPersonAddressDto.getAddresses()) {
 
+            for (AddressDto addressDto : userPersonAddressDto.getAddresses()) {
                 Address address;
-                // Se veio com ID → atualiza
+
+                //Novo endereço, caso não exista no banco
                 if (addressDto.getId() != null) {
                     address = addressRepository.getReferenceById(addressDto.getId());
                     copyAddressDtoToAddress(addressDto, address);
-                } else {
 
-                    // Se não veio ID → verifica se já existe no banco
+                } else {
                     Optional<Address> existingAddress = addressRepository.findByRoadAndNumberAndZipCodeAndCity(
                             addressDto.getRoad(),
                             addressDto.getNumber(),
                             addressDto.getZipCode(),
                             addressDto.getCity());
+
                     if (existingAddress.isPresent()) {
 
                         // reutiliza endereço existente
                         address = existingAddress.get();
 
                     } else {
+
                         // cria novo
                         address = new Address();
                         copyAddressDtoToAddress(addressDto, address);
@@ -160,11 +183,12 @@ public class UserPersonAddressService implements UserDetailsService {
                 user.addAddress(address);
             }
         }
-
         User savedUser = userRepository.save(user);
         return new UserPersonAddressDto(savedUser); }
 
-    //DELETE
+
+    //================ DELETE =====================
+
     @Transactional
     public void delete (Long id) {
 
@@ -174,7 +198,8 @@ public class UserPersonAddressService implements UserDetailsService {
 
     }
 
-    //MÉTODOS
+    //================ MÉTODOS =====================
+
     // Converte dto user para entity user
     public void copyUserDtoToUser(UserPersonAddressDto userPersonAddressDto, User user) {
         user.setName(userPersonAddressDto.getName());
@@ -198,18 +223,19 @@ public class UserPersonAddressService implements UserDetailsService {
     }
 
 
-    //SEGURANÇA (UserDetailsService)
+    //================ SEGURANÇA (User Details Service) =====================
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         List<UserDetailsProjection> result = userRepository.searchUserAndRolesByEmail(username);
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             throw new UsernameNotFoundException("Email not found");
         }
 
         User user = new User();
-        user.setEmail(result.get(0).getUsername());
-        user.setPassword(result.get(0).getPassword());
+        user.setEmail(result.getFirst().getUsername());
+        user.setPassword(result.getFirst().getPassword());
         for (UserDetailsProjection projection : result) {
             user.addRole(new Role(projection.getRoleId(), projection.getAuthority()));
         }
