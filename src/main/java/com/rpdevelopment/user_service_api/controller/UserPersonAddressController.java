@@ -3,10 +3,9 @@ package com.rpdevelopment.user_service_api.controller;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
 import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
 import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
-import com.rpdevelopment.user_service_api.service.AuthService;
+import com.rpdevelopment.user_service_api.service.UserService;
 import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +20,20 @@ import java.net.URI;
 @RequestMapping(value = "/users")
 public class UserPersonAddressController {
 
-    @Autowired
+    // =============== DEPENDÊNCIAS ====================
+
     private UserPersonAddressService service;
 
-    @Autowired
-    private AuthService authService;
 
-    //CRUD PADRÃO
+    // ========= CONSTRUTOR DEPENDÊNCIAS ===============
+
+    public UserPersonAddressController(UserPersonAddressService service) {
+        this.service = service;
+    }
+
+
+    // =============== GET ====================
+
     //FIND ALL
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping
@@ -35,6 +41,7 @@ public class UserPersonAddressController {
         Page<UserPersonAddressDto> usersDto = service.usersFindAll(pageable);
         return ResponseEntity.ok(usersDto);
     }
+
 
     //FIND BY ID
     @PreAuthorize("hasAnyRole('ROLE_USER')")
@@ -44,6 +51,7 @@ public class UserPersonAddressController {
         return ResponseEntity.ok(userDto);
     }
 
+
     //QUERY USER DOCUMENT
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping(value = "/documents")
@@ -51,6 +59,7 @@ public class UserPersonAddressController {
         Page<UserDocumentProjection> usersDocummentProjection = service.searchUserDocument(pageable);
         return ResponseEntity.ok(usersDocummentProjection);
     }
+
 
     //QUERY USER ADDRESS
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -60,7 +69,9 @@ public class UserPersonAddressController {
         return ResponseEntity.ok(userAddressProjections);
     }
 
-    //POST
+
+    // =============== POST ====================
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<UserPersonAddressDto> save(@RequestBody @Valid UserPersonAddressDto userDto) {
@@ -69,7 +80,9 @@ public class UserPersonAddressController {
         return ResponseEntity.created(uri).body(userDtoSaved);
     }
 
-    //PUT
+
+    // =============== PUT ====================
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserPersonAddressDto> update(@RequestBody @Valid UserPersonAddressDto userDto, @PathVariable Long id) {
@@ -77,19 +90,13 @@ public class UserPersonAddressController {
         return ResponseEntity.ok(userDtoUpdated);
     }
 
-    //DELETE
+
+    // =============== DELETE ====================
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserPersonAddressDto> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    //USUÁRIO LOGADO
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @GetMapping(value = "/me")
-    public ResponseEntity<UserPersonAddressDto> findMe() {
-        UserPersonAddressDto dto = authService.getMe();
-        return ResponseEntity.ok(dto);
     }
 }

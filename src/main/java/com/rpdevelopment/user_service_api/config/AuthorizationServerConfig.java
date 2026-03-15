@@ -61,6 +61,9 @@ public class AuthorizationServerConfig {
 	@Autowired
 	private UserDetailsService userDetailsService;
 
+	@Autowired
+	private SecurityBeansConfig securityBeansConfig;
+
 	@Bean
 	@Order(2)
 	public SecurityFilterChain asSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -72,7 +75,7 @@ public class AuthorizationServerConfig {
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
 			.tokenEndpoint(tokenEndpoint -> tokenEndpoint
 				.accessTokenRequestConverter(new CustomPasswordAuthenticationConverter())
-				.authenticationProvider(new CustomPasswordAuthenticationProvider(authorizationService(), tokenGenerator(), userDetailsService, passwordEncoder())));
+				.authenticationProvider(new CustomPasswordAuthenticationProvider(authorizationService(), tokenGenerator(), userDetailsService, securityBeansConfig.passwordEncoder())));
 
 		//CONFIGURAÇÃO PARA TRABALHAR COM TOKEN JWT
 		http.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
@@ -91,10 +94,6 @@ public class AuthorizationServerConfig {
 		return new InMemoryOAuth2AuthorizationConsentService();
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 
 	// CONFIGURAÇÃO PARA CREDENCIAL DA APLICAÇÃO
 	@Bean
@@ -103,7 +102,7 @@ public class AuthorizationServerConfig {
 		RegisteredClient registeredClient = RegisteredClient
 			.withId(UUID.randomUUID().toString())
 			.clientId(clientId)
-			.clientSecret(passwordEncoder().encode(clientSecret))
+			.clientSecret(securityBeansConfig.passwordEncoder().encode(clientSecret))
 			.scope("read")
 			.scope("write")
 			.authorizationGrantType(new AuthorizationGrantType("password"))

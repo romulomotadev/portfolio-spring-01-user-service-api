@@ -45,7 +45,7 @@ public class UserPersonAddressServiceTest {
     @Mock
     private AddressRepository addressRepository;
     @Mock
-    private AuthService authService;
+    private UserService authService;
 
     private Long existingId;
     private Long nonExistingId;

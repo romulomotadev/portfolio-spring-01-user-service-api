@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
 import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
 import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
-import com.rpdevelopment.user_service_api.service.AuthService;
+import com.rpdevelopment.user_service_api.service.UserService;
 import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 
@@ -37,7 +37,7 @@ public class UserPersonAddressControllerTest {
     @MockBean
     private UserPersonAddressService service;
     @MockBean
-    private AuthService authService;
+    private UserService authService;
 
     @Autowired
     private MockMvc mockMvc;

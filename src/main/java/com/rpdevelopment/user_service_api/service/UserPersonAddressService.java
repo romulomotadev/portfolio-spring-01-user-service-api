@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,16 +34,21 @@ public class UserPersonAddressService implements UserDetailsService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final PersonRepository personRepository;
-    private final AuthService authService;
+    private final UserService authService;
+    private final PasswordEncoder passwordEncoder;
 
 
     //================ CONSTRUTOR =====================
 
-    public UserPersonAddressService(UserRepository userRepository, AddressRepository addressRepository, PersonRepository personRepository, AuthService authService) {
+    public UserPersonAddressService(UserRepository userRepository, AddressRepository addressRepository,
+                                    PersonRepository personRepository, UserService authService,
+                                    PasswordEncoder passwordEncoder) {
+
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.personRepository = personRepository;
         this.authService = authService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -101,9 +107,12 @@ public class UserPersonAddressService implements UserDetailsService {
         //Preparando User
         User user = new User();
         copyUserDtoToUser(userPersonAddressDto, user);
-        Person person = new Person();
+        // criptografa senha
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
 
         //Preparando Person
+        Person person = new Person();
         copyPersonDtotoPerson(userPersonAddressDto, person);
         user.setPerson(person);
 
@@ -140,6 +149,8 @@ public class UserPersonAddressService implements UserDetailsService {
         }
 
         copyUserDtoToUser(userPersonAddressDto, user);
+        // criptografa senha
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         //Preparando Person
         Person person = user.getPerson();
