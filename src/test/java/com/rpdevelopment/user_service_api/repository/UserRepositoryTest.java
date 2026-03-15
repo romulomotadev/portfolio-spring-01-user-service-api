@@ -6,6 +6,7 @@ import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
 import com.rpdevelopment.user_service_api.tests.UserFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserRepositoryTest {
 
+    //================== DEPENDÊNCIAS ==================
+
     @Autowired
     private UserRepository userRepository;
 
@@ -28,30 +31,38 @@ public class UserRepositoryTest {
 
     private User user;
 
-    //inicialização
+
+    //================== INICIALIZAÇÃO ==================
+
     @BeforeEach
     void setUp() {
         //Criando user
         user = UserFactory.createNewUser();
     }
 
+
+    // ================= GET =================
+
     //EMAIL EXISTENTE
     @Test
+    @DisplayName("Deve retornar verdadeiro quando e-mail existir")
     public void shouldReturnTrueWhenEmailExists() {
 
         //Preparando
         User savedUser = userRepository.save(user);
 
         //Ação
-        Boolean result = userRepository.existsByEmail(savedUser.getEmail());
+        boolean result = userRepository.existsByEmail(savedUser.getEmail());
 
         //Verificação
         Assertions.assertTrue(result);
         Assertions.assertEquals(savedUser.getEmail(), user.getEmail());
     }
 
+
     //POSSUI OUTRA ENTIDADE COM MESMO EMAIL
     @Test
+    @DisplayName("Deve retornar verdadeiro quando e-mail existir para outro ID")
     public void shouldReturnTrueWhenEmailExistsForAnotherId() {
 
         // 1. Criar e limpar o primeiro usuário
@@ -74,7 +85,9 @@ public class UserRepositoryTest {
     }
 
 
+    //RETORNA PAGINA DE PROJEÇÃO DO DOCUMENTO
     @Test
+    @DisplayName("Busca dos documentos devem retornar a pagina de projeções")
     public void searchUserDocumentShouldReturnPageOfProjections() {
 
         // 1. Preparando: EntityManager para persistir
@@ -101,7 +114,10 @@ public class UserRepositoryTest {
         Assertions.assertEquals(user.getPerson().getDocument(), foundProjection.getDocument());
     }
 
+
+    //RETORNA PAGINA DE PROJEÇÃO DO ENDEREÇO
     @Test
+    @DisplayName("Busca dos endereços devem retornar a pagina de projeções")
     public void searchUserAddressShouldReturnPageOfProjections() {
 
         // 1. Preparando
@@ -123,12 +139,12 @@ public class UserRepositoryTest {
 
         // Busca o registro específico dentro da lista retornada
         UserAddressProjection foundProjection = result.getContent().stream()
-                .filter(p -> p.getRoad().equals(user.getAddresses().get(0).getRoad()))
+                .filter(p -> p.getRoad().equals(user.getAddresses().getFirst().getRoad()))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Endereço criado não encontrado na lista!"));
 
         // 3. Verificação0,
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals(user.getAddresses().get(0).getRoad(), foundProjection.getRoad());
+        Assertions.assertEquals(user.getAddresses().getFirst().getRoad(), foundProjection.getRoad());
     }
 }

@@ -12,6 +12,7 @@ import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 import org.assertj.core.api.Assertions;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -25,18 +26,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @ExtendWith(MockitoExtension.class)
 public class UserPersonAddressServiceTest {
 
-    @InjectMocks
-    private UserPersonAddressService service;
+    //================== DEPENDÊNCIAS ==================
+
+    @Mock
+    private UserService authService;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Mock
     private UserRepository userRepository;
@@ -44,17 +48,22 @@ public class UserPersonAddressServiceTest {
     private PersonRepository personRepository;
     @Mock
     private AddressRepository addressRepository;
-    @Mock
-    private UserService authService;
 
-    private Long existingId;
-    private Long nonExistingId;
+    @InjectMocks
+    private UserPersonAddressService service;
 
     private User user;
     private UserPersonAddressDto userDto;
 
 
-    //INICIALIZAÇÃO
+    //================== ATRIBUTOS ==================
+
+    private Long existingId;
+    private Long nonExistingId;
+
+
+    //============ INICIALIZAÇÃO ============
+
     @BeforeEach
     void setUp() {
         existingId = 1L;
@@ -64,10 +73,12 @@ public class UserPersonAddressServiceTest {
         user = UserFactory.createValidUserWithId();
     }
 
+
     // ================= GET =================
 
     //ID EXISTENTE
     @Test
+    @DisplayName("Busca deve retornar usuário quando ID existir")
     public void findByIdShouldReturnUserWhenIdExists(){
         //Preparando
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
@@ -81,15 +92,17 @@ public class UserPersonAddressServiceTest {
         Assertions.assertThat(result.getName()).isEqualTo(user.getName());
         Assertions.assertThat(result.getEmail()).isEqualTo(user.getEmail());
         Assertions.assertThat(result.getPerson().getDocument()).isEqualTo(user.getPerson().getDocument());
-        Assertions.assertThat(result.getAddresses().get(0).getRoad()).isEqualTo(user.getAddresses().get(0).getRoad());
+        Assertions.assertThat(result.getAddresses().getFirst().getRoad()).isEqualTo(user.getAddresses().getFirst().getRoad());
 
         //Verificação chamada
         Mockito.verify(userRepository).findById(existingId);
     }
 
+
     //ID NÃO EXISTENTE
     @Test
-    public void findByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist(){
+    @DisplayName("Busca por ID deve retornar Not Found Exception quando ID não existe")
+    public void SearchByIdShouldNotFoundExceptionWhenIdNotFound(){
 
         //Preparando
         Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
@@ -102,8 +115,10 @@ public class UserPersonAddressServiceTest {
         Mockito.verify(userRepository).findById(nonExistingId);
     }
 
+
     //FIND ALL PAGINADO
     @Test
+    @DisplayName("Buscar todas as paginas deve retornar a pagina do usuário DTO")
     public void findAllPagedShouldReturnPageOfUserDto() {
 
         // Preparando
@@ -124,16 +139,18 @@ public class UserPersonAddressServiceTest {
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getTotalElements()).isEqualTo(1); // O total de elementos da página é 1
         Assertions.assertThat(result.getContent()).hasSize(1); // Confirma que a lista dentro da página tem 1 item.
-        Assertions.assertThat(result.getContent().get(0).getId()).isEqualTo(user.getId());
+        Assertions.assertThat(result.getContent().getFirst().getId()).isEqualTo(user.getId());
 
         //Verificação Chamada
         Mockito.verify(userRepository).findAll(pageable);
     }
 
+
     // ================= CREATE =================
 
     //DADOS VALIDOS
     @Test
+    @DisplayName("Create deve retornar User DTO")
     public void createShouldReturnUserDto(){
 
         //Preparando
@@ -155,9 +172,11 @@ public class UserPersonAddressServiceTest {
         Mockito.verify(userRepository).save(ArgumentMatchers.any(User.class));
     }
 
+
     //EMAIL DUPLICADO
     @Test
-    public void saveShouldThrowDuplicateResourceExceptionWhenEmailAlreadyExists(){
+    @DisplayName("Create deve retornar Duplicate Exception quando E-mail existe")
+    public void createShouldReturnDuplicateExceptionWhenEmailAlreadyExists(){
 
         //Preparando
         UserPersonAddressDto duplicateEmailDto = UserFactoryDto.createValidUserFactoryDto();
@@ -171,9 +190,11 @@ public class UserPersonAddressServiceTest {
                 .hasMessage("Email already exists");
     }
 
+
     //DOCUMENTO DUPLICADO
     @Test
-    public void saveShouldThrowDuplicateResourceExceptionWhenDocumentAlreadyExists(){
+    @DisplayName("Create deve retornar Exception quando Document existe")
+    public void createShouldReturnExceptionWhenDocumentAlreadyExists(){
 
         //Preparando
         UserPersonAddressDto duplicateDocumentDto = UserFactoryDto.createValidUserFactoryDto();
@@ -188,11 +209,13 @@ public class UserPersonAddressServiceTest {
 
     }
 
+
     // ================= UPDATE =================
 
     //ID EXISTENTE
     @Test
-    public void updateByIdExistentShouldUpdateEntity() {
+    @DisplayName("Update por ID deve atualizar entidade")
+    public void updateByIdShouldUpdateEntity() {
 
         //Preparando
         UserPersonAddressDto updateDto = UserFactoryDto.createValidUserFactoryDto();
@@ -200,7 +223,7 @@ public class UserPersonAddressServiceTest {
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(user);
         Mockito.when(addressRepository.getReferenceById(ArgumentMatchers.anyLong()))
-                .thenReturn(user.getAddresses().get(0));
+                .thenReturn(user.getAddresses().getFirst());
 
         //Ação
         UserPersonAddressDto result = service.update(updateDto, existingId);
@@ -211,12 +234,14 @@ public class UserPersonAddressServiceTest {
         Assertions.assertThat(result.getName()).isEqualTo(user.getName());
         Assertions.assertThat(result.getEmail()).isEqualTo(user.getEmail());
         Assertions.assertThat(result.getPerson().getDocument()).isEqualTo(user.getPerson().getDocument());
-        Assertions.assertThat(result.getAddresses().get(0).getRoad()).isEqualTo(user.getAddresses().get(0).getRoad());
+        Assertions.assertThat(result.getAddresses().getFirst().getRoad()).isEqualTo(user.getAddresses().getFirst().getRoad());
     }
+
 
     //ID NÃO EXISTENTE
     @Test
-    public void updateByIdNonExistenteThrowEntityNotFoundExceptionWhenIdDoesNotExist(){
+    @DisplayName("Update deve retornar Not Found Exception quando Document não existe")
+    public void updateShouldReturnNotFoundExceptionWhenDocumentNotExist(){
 
         //Preparando
         UserPersonAddressDto updateDto = UserFactoryDto.createValidUserFactoryDto();
@@ -228,9 +253,11 @@ public class UserPersonAddressServiceTest {
 
     }
 
+
     //EMAIL DUPLICADO
     @Test
-    public void updateShouldThrowDuplicateResourceExceptionWhenEmailAlreadyExists(){
+    @DisplayName("Update deve retornar Duplicate Exception quando E-mail existe")
+    public void updateShouldReturnExceptionDuplicateWhenEmailExists(){
 
         //Preparando
         UserPersonAddressDto duplicateEmailDto = UserFactoryDto.createValidUserFactoryDto();
@@ -247,9 +274,11 @@ public class UserPersonAddressServiceTest {
                 .hasMessage("Email already exists");
     }
 
+
     //DOCUMENTO DUPLICADO
     @Test
-    public void updateShouldThrowDuplicateResourceExceptionWhenDocumentAlreadyExists(){
+    @DisplayName("Update deve retornar Duplicate Exception quando Document existe")
+    public void updateShouldReturnExceptionDuplicateWhenDocumentExists(){
 
         //Preparando
         UserPersonAddressDto duplicateDocumentDto = UserFactoryDto.createValidUserFactoryDto();
@@ -266,11 +295,13 @@ public class UserPersonAddressServiceTest {
                 .hasMessage("Document already exists");
     }
 
+
     // ================= DELETE =================
 
     //ID EXISTENTE
     @Test
-    public void deleteShouldWhenIdExists(){
+    @DisplayName("Delete deve excluir quando ID existe")
+    public void deleteShouldDeletedWhenIdExists(){
 
         //Preparando
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
@@ -283,8 +314,10 @@ public class UserPersonAddressServiceTest {
         Mockito.verify(userRepository, Mockito.times(1)).delete(user);
     }
 
+
     //ID INEXISTENTE
     @Test
+    @DisplayName("Delete deve retornar Not Found Exception quando ID não existe")
     public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist(){
 
         //Preparando
@@ -299,8 +332,10 @@ public class UserPersonAddressServiceTest {
         Mockito.verify(userRepository, Mockito.never()).delete(Mockito.any());
     }
 
+
     //ID DEPENDENTE
     @Test
+    @DisplayName("Delete deve retornar Integrity Violation Exception quando ID dependente")
     public void deleteShouldThrowDataIntegrityViolationExceptionWhenDependentId(){
 
         //Preparando

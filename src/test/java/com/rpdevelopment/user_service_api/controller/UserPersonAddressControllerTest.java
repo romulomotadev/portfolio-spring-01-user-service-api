@@ -9,6 +9,7 @@ import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -54,7 +55,7 @@ public class UserPersonAddressControllerTest {
     private PageImpl<UserPersonAddressDto> pageDto;
 
 
-    //============ INICIALIZAR ATRIBUTOS ============
+    //================== INICIALIZAÇÃO ==================
 
     @BeforeEach
     void setUp() throws Exception {
@@ -64,10 +65,12 @@ public class UserPersonAddressControllerTest {
         pageDto = new PageImpl<>(List.of(dto));
     }
 
+
     // ================= GET =================
 
     //GET ID EXISTENTE
     @Test
+    @DisplayName("Busca por ID deve retornar usuário quando ID existe")
     public void findByIdShouldReturnUserWhenIdExists() throws Exception {
 
         //CHAMADA E RETORNO DO METODO
@@ -91,6 +94,7 @@ public class UserPersonAddressControllerTest {
 
     //GET ID NÃO EXISTENTE
     @Test
+    @DisplayName("Busca por ID retornar 404 quando ID não existe")
     public void findByIdShouldReturn404WhenIdDoesNotExist() throws Exception {
 
         //CHAMADA E RETORNO DO METODO
@@ -113,6 +117,7 @@ public class UserPersonAddressControllerTest {
     // ================= CREATE =================
 
     @Test
+    @DisplayName("Create deve retornar 201 e User DTO")
     public void createShouldReturn201AndUserDto() throws Exception {
 
         //CHAMADA E RETORNO DO METODO
@@ -141,6 +146,7 @@ public class UserPersonAddressControllerTest {
 
     //CREATE EMAIL DUPLICADO
     @Test
+    @DisplayName("Create deve retornar 409 quando E-mail existe")
     public void createShouldReturn409WhenEmailAlreadyExists() throws Exception {
 
         //CHAMADA E RETORNO DO METODO
@@ -166,6 +172,7 @@ public class UserPersonAddressControllerTest {
 
     //VALIDAÇÃO
     @Test
+    @DisplayName("Create deve retornar 422 quando a validação falha")
     public void createShouldReturn422WhenValidationFails() throws Exception {
 
         // DTO INVALIDO (ex: nome vazio se tiver @NotBlank)
@@ -200,9 +207,10 @@ public class UserPersonAddressControllerTest {
 
     // ================= UPDATE =================
 
-    //UPDATE ID EXISTENTE
+    //ID EXISTENTE
     @Test
-    public void updateShouldReturn200AndUpdatedUserWhenIdExists() throws Exception {
+    @DisplayName("Update deve retornar 200 quando ID existe")
+    public void updateShouldReturn200WhenIdExists() throws Exception {
 
         //PREPARANDO
         Mockito.when(service.update(Mockito
@@ -230,8 +238,9 @@ public class UserPersonAddressControllerTest {
     }
 
 
-    //UPDATE ID NÃO EXISTENTE
+    //ID NÃO EXISTENTE
     @Test
+    @DisplayName("Update deve retornar 404 quando ID não existe")
     public void updateShouldReturn404WhenIdDoesNotExist() throws Exception {
 
         //PREPARANDO
@@ -265,7 +274,8 @@ public class UserPersonAddressControllerTest {
 
     //UPDATE EMAIL DUPLICADO
     @Test
-    public void updateShouldReturn409WhenEmailAlreadyExists() throws Exception{
+    @DisplayName("Update deve retornar 409 quando E-mail existe")
+    public void updateShouldReturn409WhenEmailExists() throws Exception{
 
         //CHAMADA E RETORNO DO METODO
         Mockito.when(service.update(Mockito
@@ -295,6 +305,7 @@ public class UserPersonAddressControllerTest {
 
     //UPDATE VALIDAÇÃO
     @Test
+    @DisplayName("Update deve retornar 422 quando validação falha")
     public void updateShouldReturn422WhenValidationFails() throws Exception {
 
         // DTO INVALIDO (ex: nome vazio se tiver @NotBlank)
@@ -331,6 +342,7 @@ public class UserPersonAddressControllerTest {
 
     //DELETE ID EXISTENTE
     @Test
+    @DisplayName("Delete deve retornar 204 quando ID existe")
     public void deleteShouldReturn204WhenIdExists() throws Exception {
         //PREPARANDO
         Mockito.doNothing().when(service).delete(existingId);
@@ -349,6 +361,7 @@ public class UserPersonAddressControllerTest {
 
     //DELETE ID NÃO EXISTENTE
     @Test
+    @DisplayName("Delete deve retornar 404 quando ID não existe")
     public void deleteShouldReturn404WhenIdDoesNotExist() throws Exception {
 
         //PREPARANDO
@@ -373,6 +386,7 @@ public class UserPersonAddressControllerTest {
 
     //PAGINAÇÃO
     @Test
+    @DisplayName("Todos os usuários paginados devem retornar")
     public void findAllShouldReturnPagedUsers() throws Exception {
 
         //PREPARANDO

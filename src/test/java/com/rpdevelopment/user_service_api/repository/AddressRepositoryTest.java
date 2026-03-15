@@ -5,6 +5,7 @@ import com.rpdevelopment.user_service_api.entity.User;
 import com.rpdevelopment.user_service_api.tests.UserFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,23 +16,30 @@ import java.util.Optional;
 @DataJpaTest
 public class AddressRepositoryTest {
 
+    //================== DEPENDÊNCIAS ==================
+
     @Autowired
     private AddressRepository addressRepository;
 
     private User user;
 
+
+    //================== INICIALIZAÇÃO ==================
+
     @BeforeEach
     void setUp() {
-
         user = UserFactory.createValidUserWithId();
-
     }
 
+
+    //================== GET ==================
+
     @Test
+    @DisplayName("Busca deve buscar endereço por campo")
     public void shouldFindAddressByFields(){
 
         //PREPARANDO
-        Address address = user.getAddresses().get(0);
+        Address address = user.getAddresses().getFirst();
         addressRepository.save(address);
 
         //Ação

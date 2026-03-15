@@ -5,6 +5,7 @@ import com.rpdevelopment.user_service_api.entity.User;
 import com.rpdevelopment.user_service_api.tests.UserFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,18 +14,27 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @DataJpaTest
 public class PersonRepositoryTest {
 
+    //================== DEPENDÊNCIAS ==================
+
     @Autowired
     private PersonRepository personRepository;
 
     private User user;
+
+
+    //================== INICIALIZAÇÃO ==================
 
     @BeforeEach
     void setUp() {
         user = UserFactory.createNewUser();
     }
 
+
+    // ================= GET =================
+
     //DOCUMENTO EXISTENTE
     @Test
+    @DisplayName("Deve retornar verdadeiro quando documento existe")
     public void shouldReturnTrueWhenDocumentExists(){
 
         //Preparando
@@ -32,15 +42,17 @@ public class PersonRepositoryTest {
         Person save = personRepository.save(person);
 
         //Ação
-        Boolean result = personRepository.existsByDocument(person.getDocument());
+        boolean result = personRepository.existsByDocument(person.getDocument());
 
         //Verificação
         Assertions.assertTrue(result);
         Assertions.assertEquals(person.getDocument(), save.getDocument());
     }
 
+
     //POSSUI OUTRA ENTIDADE COM MESMO DOCUMENTO
     @Test
+    @DisplayName("Deve retornar verdadeiro quando documento existe para outro ID")
     public void shouldReturnTrueWhenDocumentExistsForAnotherId(){
 
         // 1. Criar e limpar o primeiro usuário
@@ -56,7 +68,7 @@ public class PersonRepositoryTest {
         personRepository.save(user2.getPerson());
 
         // Ação
-        Boolean result = personRepository
+        boolean result = personRepository
                 .existsByDocumentAndIdNot("11122233344", user2.getId());
 
         // Verificação

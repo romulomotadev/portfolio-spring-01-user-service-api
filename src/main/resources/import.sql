@@ -11,7 +11,7 @@ INSERT INTO tb_person (document, type) VALUES ('163.904.285-40', 'NATURAL_PERSON
 INSERT INTO tb_person (document, type) VALUES ('274.518.996-02', 'NATURAL_PERSON');
 
 -- user
-INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Pedro Henrique', 'pedro@gmail.com', '1990-06-01', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 1);
+INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Pedro Henrique', 'admin@gmail.com', '1990-06-01', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 1);
 INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Ana Paula', 'ana.paula@gmail.com', '1988-03-15', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 2);
 INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Mariana Silva', 'mariana.silva@gmail.com', '1995-08-10', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 3);
 INSERT INTO tb_user (name, email, birth_date, password, person_id) VALUES ('Rafael Costa', 'rafael.costa@gmail.com', '1987-01-05', '$2a$10$FL4P9tKJzW1Ox3.BwSaKX.6l5ESJcSQ2DIK9zrbrNF5628TI1Q8pK', 4);
