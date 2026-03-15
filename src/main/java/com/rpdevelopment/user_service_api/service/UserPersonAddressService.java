@@ -1,6 +1,7 @@
 package com.rpdevelopment.user_service_api.service;
 
 import com.rpdevelopment.user_service_api.dto.AddressDto;
+import com.rpdevelopment.user_service_api.dto.PersonDto;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
 import com.rpdevelopment.user_service_api.entity.Address;
 import com.rpdevelopment.user_service_api.entity.Person;
@@ -23,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,7 +115,7 @@ public class UserPersonAddressService implements UserDetailsService {
 
         //Preparando Person
         Person person = new Person();
-        copyPersonDtotoPerson(userPersonAddressDto, person);
+        copyPersonDtoToPerson(userPersonAddressDto, person);
         user.setPerson(person);
 
         //Preparando Addresses
@@ -131,6 +133,7 @@ public class UserPersonAddressService implements UserDetailsService {
 
     //================ UPDATE =====================
 
+    //UPDATE ALL
     @Transactional
     public UserPersonAddressDto update(UserPersonAddressDto userPersonAddressDto, Long id) {
 
@@ -157,7 +160,7 @@ public class UserPersonAddressService implements UserDetailsService {
         if (person == null) {
             person = new Person();
         }
-        copyPersonDtotoPerson(userPersonAddressDto, person);
+        copyPersonDtoToPerson(userPersonAddressDto, person);
         user.setPerson(person);
 
         // Preparando addresses
@@ -180,12 +183,10 @@ public class UserPersonAddressService implements UserDetailsService {
                             addressDto.getCity());
 
                     if (existingAddress.isPresent()) {
-
                         // reutiliza endereço existente
                         address = existingAddress.get();
 
                     } else {
-
                         // cria novo
                         address = new Address();
                         copyAddressDtoToAddress(addressDto, address);
@@ -195,7 +196,57 @@ public class UserPersonAddressService implements UserDetailsService {
             }
         }
         User savedUser = userRepository.save(user);
-        return new UserPersonAddressDto(savedUser); }
+        return new UserPersonAddressDto(savedUser);
+    }
+
+
+    //UPDATE ADDRESSES
+    @Transactional
+    public List<AddressDto> updateAddresses(List<AddressDto> addressDtoList, Long id) {
+
+        //Endereço repository
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        List<Address> addresses = user.getAddresses();
+
+
+        for (AddressDto addressDto : addressDtoList) {
+
+            if (addressDto.getId() != null) {
+                // Atualiza endereço existente
+                Address address = addressRepository.getReferenceById(addressDto.getId());
+                copyAddressDtoToAddress(addressDto, address);
+
+            } else {
+                // Cria novo endereço
+                Address newAddress = new Address();
+                copyAddressDtoToAddress(addressDto, newAddress);
+                user.addAddress(newAddress);
+            }
+        }
+
+        userRepository.save(user);
+        return user.getAddresses().stream().map(AddressDto::new).toList();
+    }
+
+
+    //UPDATE PERSON
+    @Transactional
+    public PersonDto updatePerson(PersonDto personDto, Long id) {
+
+        User user = userRepository.findById(id).orElseThrow(
+                ()-> new ResourceNotFoundException("Id Not Found"));
+
+        Person person = user.getPerson();
+
+        person.setDocument(personDto.getDocument());
+        person.setType(personDto.getType());
+
+        user.setPerson(person);
+        userRepository.save(user);
+
+        return new PersonDto(person);
+    }
 
 
     //================ DELETE =====================
@@ -209,6 +260,7 @@ public class UserPersonAddressService implements UserDetailsService {
 
     }
 
+
     //================ MÉTODOS =====================
 
     // Converte dto user para entity user
@@ -219,7 +271,7 @@ public class UserPersonAddressService implements UserDetailsService {
         user.setPassword(userPersonAddressDto.getPassword()); }
 
     //Converter dto person para entity person
-    public void copyPersonDtotoPerson(UserPersonAddressDto userPersonAddressDto, Person person) {
+    public void copyPersonDtoToPerson(UserPersonAddressDto userPersonAddressDto, Person person) {
         person.setDocument(userPersonAddressDto.getPerson().getDocument());
         person.setType(userPersonAddressDto.getPerson().getType()); }
 

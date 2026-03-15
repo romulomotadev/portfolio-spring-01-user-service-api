@@ -59,7 +59,7 @@ public class CustomPasswordAuthenticationConverter implements AuthenticationConv
 		parameters.forEach((key, value) -> {
 			if (!key.equals(OAuth2ParameterNames.GRANT_TYPE) &&
 					!key.equals(OAuth2ParameterNames.SCOPE)) {
-				additionalParameters.put(key, value.get(0));
+				additionalParameters.put(key, value.getFirst());
 			}
 		});
 		
@@ -72,12 +72,10 @@ public class CustomPasswordAuthenticationConverter implements AuthenticationConv
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>(parameterMap.size());
 		parameterMap.forEach((key, values) -> {
-			if (values.length > 0) {
-				for (String value : values) {
-					parameters.add(key, value);
-				}
-			}
-		});
+            for (String value : values) {
+                parameters.add(key, value);
+            }
+        });
 		return parameters;
 	}
 }
