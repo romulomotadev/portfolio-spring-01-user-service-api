@@ -12,4 +12,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     //DOCUMENT EXIST - ID NOT
     boolean existsByDocumentAndIdNot(String document, Long id);
+
+
 }

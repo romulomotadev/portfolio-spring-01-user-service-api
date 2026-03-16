@@ -133,6 +133,55 @@ public class UserPersonAddressService implements UserDetailsService {
 
     //================ UPDATE =====================
 
+    //UPDATE ADDRESSES
+    @Transactional
+    public List<AddressDto> updateAddresses(List<AddressDto> addressDtoList, Long id) {
+
+        //Endereço repository
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        List<Address> addresses = user.getAddresses();
+
+
+        for (AddressDto addressDto : addressDtoList) {
+
+            if (addressDto.getId() != null) {
+                // Atualiza endereço existente
+                Address address = addressRepository.getReferenceById(addressDto.getId());
+                copyAddressDtoToAddress(addressDto, address);
+
+            } else {
+                // Cria novo endereço
+                Address newAddress = new Address();
+                copyAddressDtoToAddress(addressDto, newAddress);
+                user.addAddress(newAddress);
+            }
+        }
+
+        userRepository.save(user);
+        return user.getAddresses().stream().map(AddressDto::new).toList();
+    }
+
+
+    //UPDATE PERSON
+    @Transactional
+    public PersonDto updatePerson(PersonDto personDto, Long id) {
+
+        User user = userRepository.findById(id).orElseThrow(
+                ()-> new ResourceNotFoundException("Id Not Found"));
+
+        Person person = user.getPerson();
+
+        person.setDocument(personDto.getDocument());
+        person.setType(personDto.getType());
+
+        user.setPerson(person);
+        userRepository.save(user);
+
+        return new PersonDto(person);
+    }
+
+
     //UPDATE ALL
     @Transactional
     public UserPersonAddressDto update(UserPersonAddressDto userPersonAddressDto, Long id) {
@@ -197,55 +246,6 @@ public class UserPersonAddressService implements UserDetailsService {
         }
         User savedUser = userRepository.save(user);
         return new UserPersonAddressDto(savedUser);
-    }
-
-
-    //UPDATE ADDRESSES
-    @Transactional
-    public List<AddressDto> updateAddresses(List<AddressDto> addressDtoList, Long id) {
-
-        //Endereço repository
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        List<Address> addresses = user.getAddresses();
-
-
-        for (AddressDto addressDto : addressDtoList) {
-
-            if (addressDto.getId() != null) {
-                // Atualiza endereço existente
-                Address address = addressRepository.getReferenceById(addressDto.getId());
-                copyAddressDtoToAddress(addressDto, address);
-
-            } else {
-                // Cria novo endereço
-                Address newAddress = new Address();
-                copyAddressDtoToAddress(addressDto, newAddress);
-                user.addAddress(newAddress);
-            }
-        }
-
-        userRepository.save(user);
-        return user.getAddresses().stream().map(AddressDto::new).toList();
-    }
-
-
-    //UPDATE PERSON
-    @Transactional
-    public PersonDto updatePerson(PersonDto personDto, Long id) {
-
-        User user = userRepository.findById(id).orElseThrow(
-                ()-> new ResourceNotFoundException("Id Not Found"));
-
-        Person person = user.getPerson();
-
-        person.setDocument(personDto.getDocument());
-        person.setType(personDto.getType());
-
-        user.setPerson(person);
-        userRepository.save(user);
-
-        return new PersonDto(person);
     }
 
 

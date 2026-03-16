@@ -1,6 +1,10 @@
 package com.rpdevelopment.user_service_api.service;
 
+import com.rpdevelopment.user_service_api.dto.AddressDto;
+import com.rpdevelopment.user_service_api.dto.PersonDto;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
+import com.rpdevelopment.user_service_api.entity.Address;
+import com.rpdevelopment.user_service_api.entity.Person;
 import com.rpdevelopment.user_service_api.entity.User;
 import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
 import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
@@ -27,6 +31,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -206,7 +211,6 @@ public class UserPersonAddressServiceTest {
         Assertions.assertThatThrownBy(() -> service.save(duplicateDocumentDto))
                 .isInstanceOf(DuplicateResourceException.class)
                 .hasMessage("Document already exists");;
-
     }
 
 
@@ -234,7 +238,55 @@ public class UserPersonAddressServiceTest {
         Assertions.assertThat(result.getName()).isEqualTo(user.getName());
         Assertions.assertThat(result.getEmail()).isEqualTo(user.getEmail());
         Assertions.assertThat(result.getPerson().getDocument()).isEqualTo(user.getPerson().getDocument());
-        Assertions.assertThat(result.getAddresses().getFirst().getRoad()).isEqualTo(user.getAddresses().getFirst().getRoad());
+        Assertions.assertThat(result.getAddresses().getFirst().getRoad()).isEqualTo(user.getAddresses()
+                .getFirst().getRoad());
+    }
+
+
+    //UPDATE PERSON ID EXISTENTE
+    @Test
+    @DisplayName("Update deve atualizar person quando id do usuário existe")
+    public void updatePersonShouldUpdateWhenUserExists() {
+
+        // Preparando
+        PersonDto personDto = UserFactoryDto.createValidUserFactoryDto().getPerson();
+        personDto.setId(existingId);
+
+        Mockito.when(userRepository.findById(existingId))
+                .thenReturn(Optional.of(user));
+
+        // Ação
+        PersonDto result = service.updatePerson(personDto, existingId);
+
+        // Verificação
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getDocument()).isEqualTo(personDto.getDocument());
+        Assertions.assertThat(result.getType()).isEqualTo(personDto.getType());
+    }
+
+
+    //UPDATE ADDRESSES ID EXISTENTE
+    @Test
+    @DisplayName("Deve atualizar Addresses quando id do usuário existe")
+    public void updateAddressesShouldUpdateWhenUserExists() {
+        // Preparando dados
+        List<AddressDto> addressDtos = UserFactoryDto.createValidUserFactoryDto().getAddresses();
+
+        Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(ArgumentMatchers.any())).thenReturn(user);
+
+        // Se o DTO tem ID, moca o addressRepository
+        if (addressDtos.getFirst().getId() != null) {
+            Mockito.when(addressRepository.getReferenceById(ArgumentMatchers.anyLong()))
+                    .thenReturn(user.getAddresses().getFirst());
+        }
+
+        // Ação
+        List<AddressDto> result = service.updateAddresses(addressDtos, existingId);
+
+        // Verificação
+        Assertions.assertThat(result).isNotEmpty();
+        Mockito.verify(userRepository, Mockito.times(1)).save(ArgumentMatchers.any());
     }
 
 
@@ -251,6 +303,37 @@ public class UserPersonAddressServiceTest {
         Assertions.assertThatThrownBy(() -> service.update(updateDto, nonExistingId))
                 .isInstanceOf(ResourceNotFoundException.class);
 
+    }
+
+
+    //ID NÃO EXISTENTE - USER PERSON
+    @Test
+    @DisplayName("Update Person deve lançar exceção quando usuário não existe")
+    public void updatePersonShouldThrowExceptionWhenUserNotFound(){
+
+        //Preparando
+        PersonDto persnDto = UserFactoryDto.createValidUserFactoryDto().getPerson();
+        Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+        //Ação || Validação
+        Assertions.assertThatThrownBy(() -> service.updatePerson(persnDto, nonExistingId));
+    }
+
+
+    //ID NÃO EXISTENTE - USER ADDRESSES
+    @Test
+    @DisplayName("Update Addresses deve lançar exceção quando usuário não existe")
+    public void updateAddressesShouldThrowExceptionWhenUserNotFound(){
+        // Preparando
+        List<AddressDto> addressDtos = UserFactoryDto.createValidUserFactoryDto().getAddresses();
+
+        // CORREÇÃO: Use userRepository, que é o que o service chama primeiro
+        Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+        // Ação || Validação
+        Assertions.assertThatThrownBy(() -> service.updateAddresses(addressDtos, nonExistingId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("User not found");
     }
 
 
