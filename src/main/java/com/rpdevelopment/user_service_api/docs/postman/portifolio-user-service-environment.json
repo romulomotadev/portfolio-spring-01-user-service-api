@@ -1,0 +1,46 @@
+{
+	"id": "c347b80b-e361-4725-8b94-d3eb862db030",
+	"name": "Portifolio User Service",
+	"values": [
+		{
+			"key": "host",
+			"value": "http://localhost:8080",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "client-id",
+			"value": "myclientid",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "client-secret",
+			"value": "myclientsecret",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "username",
+			"value": "alex@gmail.com",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "password",
+			"value": "123456",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"color": null,
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2026-03-16T14:44:26.851Z",
+	"_postman_exported_using": "Postman/12.1.4"
+}
