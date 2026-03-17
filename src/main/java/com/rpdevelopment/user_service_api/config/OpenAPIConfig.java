@@ -42,6 +42,4 @@ public class OpenAPIConfig {
                         .forEach(op -> op.addSecurityItem(new SecurityRequirement().addList("bearerAuth")))
                 );
     }
-
-
 }
