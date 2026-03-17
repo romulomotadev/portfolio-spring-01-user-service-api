@@ -3,24 +3,32 @@ package com.rpdevelopment.user_service_api.dto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.rpdevelopment.user_service_api.entity.Address;
 import com.rpdevelopment.user_service_api.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 @JsonPropertyOrder({ "id", "road", "number", "neighborhood", "complement", "city", "zipCode"})
 public class AddressDto {
 
     //Atributos
+    @Schema(description = "Identificador único do endereço gerado pelo banco de dados", example = "1")
     private Long id;
     @NotBlank(message = "Campo rua requerido")
+    @Schema(description = "Nome da rua ou logradouro do endereço", example = "Rua das Flores")
     private String road;
     @NotBlank(message = "Campo numero requerido")
+    @Schema(description = "Número do imóvel", example = "123")
     private String number;
     @NotBlank(message = "Campo bairro requerido")
+    @Schema(description = "Bairro onde o endereço está localizado", example = "Centro")
     private String neighborhood;
     @NotBlank(message = "Campo complemento requerido")
+    @Schema(description = "Complemento do endereço, como apartamento, bloco ou casa", example = "Apto 301")
     private String complement;
     @NotBlank(message = "Campo cidade requerido")
+    @Schema(description = "Cidade do endereço", example = "Belo Horizonte")
     private String city;
     @NotBlank(message = "Campo cep requerido")
+    @Schema(description = "CEP do endereço", example = "30140071")
     private String zipCode;
 
     //Construtores

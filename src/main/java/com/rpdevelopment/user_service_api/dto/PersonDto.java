@@ -3,6 +3,7 @@ package com.rpdevelopment.user_service_api.dto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.rpdevelopment.user_service_api.entity.Person;
 import com.rpdevelopment.user_service_api.entity.Type;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,12 +12,15 @@ import jakarta.validation.constraints.NotNull;
 public class PersonDto {
 
     //Atributos
+    @Schema(description = "Identificador único do documento gerado pelo banco de dados", example = "1")
     private Long id;
     @NotBlank(message = "Campo documento requerido.")
+    @Schema(description = "Número do documento do usuário, podendo ser CPF ou CNPJ", example = "12345678900")
     private String document;
 
     //Atributos associados
     @NotNull(message = "Requerido tipo de documento PF ou PJ.")
+    @Schema(description = "Tipo de documento do usuário: PF para pessoa física ou PJ para pessoa jurídica", example = "PF")
     private Type type;
 
     //Construtores

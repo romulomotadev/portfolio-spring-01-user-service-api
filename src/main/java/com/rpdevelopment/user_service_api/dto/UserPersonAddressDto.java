@@ -3,6 +3,7 @@ package com.rpdevelopment.user_service_api.dto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.rpdevelopment.user_service_api.entity.Address;
 import com.rpdevelopment.user_service_api.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,31 +15,44 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Schema(description = "DTO responsável por representar o cadastro completo de um usuário, incluindo dados pessoais, documento e endereços.")
 @JsonPropertyOrder({"id","name", "email", "birthDate", "password", "person", "addresses"})
 public class UserPersonAddressDto {
 
     //Atributos
+    @Schema(description = "Identificador do usuário gerado automaticamente pelo banco de dados", example = "1")
     private Long id;
+
+    @Schema(description = "Nome completo do usuário", example = "João da Silva")
     @NotBlank(message = "Campo nome requerido")
     @Size(min = 6, max = 50, message ="Requerido 6 a 50 caracteres")
     private String name;
+
+    @Schema(description = "Endereço de e-mail do usuário", example = "joao@email.com")
     @NotBlank(message = "Campo e-mail requerido")
     @Email(message = "E-mail invalido")
     private String email;
+
+    @Schema(description = "Data de nascimento do usuário", example = "1990-05-10")
     @NotNull(message = "Campo nascimento obrigatório")
     private LocalDate birthDate;
+
+    @Schema(description = "Senha de acesso do usuário", example = "123456")
     @NotBlank(message = "Campo senha requerido")
     @Size(min = 6, max = 12, message = "Requerido de 6 a 12 caracteres.")
     private String password;
 
     //Atributos associados
+    @Schema(description = "Dados do documento da pessoa (CPF ou CNPJ)")
     @NotNull
     @Valid
     private PersonDto person;
 
+    @Schema(description = "Lista de endereços associados ao usuário")
     @Valid
     private List<AddressDto> addresses = new ArrayList<AddressDto>();
 
+    @Schema(description = "Lista de perfis de acesso atribuídos ao usuário", example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")
     private List<String> roles = new ArrayList<>();
 
 
