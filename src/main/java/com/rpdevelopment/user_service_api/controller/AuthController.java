@@ -1,6 +1,7 @@
 package com.rpdevelopment.user_service_api.controller;
 
 import com.rpdevelopment.user_service_api.dto.EmailDTO;
+import com.rpdevelopment.user_service_api.dto.NewPasswordDTO;
 import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
 import com.rpdevelopment.user_service_api.service.AuthService;
 import com.rpdevelopment.user_service_api.service.UserService;
@@ -24,9 +25,20 @@ public class AuthController {
 
     // =============== POST ====================
 
+    //RECUPERAÇÃO DE SENHA
     @PostMapping(value = "/recover-token")
     public ResponseEntity<Void> createRecoverToken (@Valid @RequestBody EmailDTO body){
         authService.createRecoverToken(body);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    // =============== UPDATE ====================
+
+    //SALVANDO NOVA SENHA
+    @PutMapping(value = "/new-password")
+    public ResponseEntity<Void> saveNewPassword (@Valid @RequestBody NewPasswordDTO body){
+        authService.saveNewPassword(body);
         return ResponseEntity.noContent().build();
     }
 
