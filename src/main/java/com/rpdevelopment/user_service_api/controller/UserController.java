@@ -1,7 +1,7 @@
 package com.rpdevelopment.user_service_api.controller;
 
-import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
-import com.rpdevelopment.user_service_api.service.UserService;
+import com.rpdevelopment.user_service_api.dto.users.UserPersonAddressDTO;
+import com.rpdevelopment.user_service_api.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,8 +40,8 @@ public class UserController {
                     @ApiResponse(responseCode = "403", description = "Acesso proibido")
             })
     @GetMapping(value = "/me")
-    public ResponseEntity<UserPersonAddressDto> findMe() {
-        UserPersonAddressDto dto = userService.getMe();
+    public ResponseEntity<UserPersonAddressDTO> findMe() {
+        UserPersonAddressDTO dto = userService.getMe();
         return ResponseEntity.ok(dto);
     }
 

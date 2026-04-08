@@ -1,4 +1,4 @@
-package com.rpdevelopment.user_service_api.dto;
+package com.rpdevelopment.user_service_api.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

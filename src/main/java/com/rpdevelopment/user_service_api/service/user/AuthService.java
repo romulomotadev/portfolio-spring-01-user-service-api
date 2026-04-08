@@ -1,13 +1,12 @@
-package com.rpdevelopment.user_service_api.service;
+package com.rpdevelopment.user_service_api.service.user;
 
-import com.rpdevelopment.user_service_api.dto.EmailDTO;
-import com.rpdevelopment.user_service_api.dto.NewPasswordDTO;
+import com.rpdevelopment.user_service_api.dto.user.EmailDTO;
+import com.rpdevelopment.user_service_api.dto.user.NewPasswordDTO;
 import com.rpdevelopment.user_service_api.entity.PasswordRecover;
 import com.rpdevelopment.user_service_api.entity.User;
-import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
+import com.rpdevelopment.user_service_api.exception.exceptions.ResourceNotFoundException;
 import com.rpdevelopment.user_service_api.repository.PasswordRecoverRepository;
 import com.rpdevelopment.user_service_api.repository.UserRepository;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;

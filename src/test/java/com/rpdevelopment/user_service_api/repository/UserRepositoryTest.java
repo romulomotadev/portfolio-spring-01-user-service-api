@@ -1,8 +1,8 @@
 package com.rpdevelopment.user_service_api.repository;
 
 import com.rpdevelopment.user_service_api.entity.User;
-import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
-import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
+import com.rpdevelopment.user_service_api.dto.projection.UserAddressProjection;
+import com.rpdevelopment.user_service_api.dto.projection.UserDocumentProjection;
 import com.rpdevelopment.user_service_api.tests.UserFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

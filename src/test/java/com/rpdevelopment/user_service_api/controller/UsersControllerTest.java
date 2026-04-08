@@ -1,11 +1,11 @@
 package com.rpdevelopment.user_service_api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
-import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
-import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
-import com.rpdevelopment.user_service_api.service.UserService;
-import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
+import com.rpdevelopment.user_service_api.dto.users.UserPersonAddressDTO;
+import com.rpdevelopment.user_service_api.exception.exceptions.DuplicateResourceException;
+import com.rpdevelopment.user_service_api.exception.exceptions.ResourceNotFoundException;
+import com.rpdevelopment.user_service_api.service.user.UserService;
+import com.rpdevelopment.user_service_api.service.users.UsersService;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,14 +29,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(value = UserPersonAddressController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
-public class UserPersonAddressControllerTest {
+@WebMvcTest(value = UsersController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+public class UsersControllerTest {
 
 
     //================== DEPENDÊNCIAS ==================
 
     @MockBean
-    private UserPersonAddressService service;
+    private UsersService service;
     @MockBean
     private UserService authService;
 
@@ -45,14 +45,14 @@ public class UserPersonAddressControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private UserPersonAddressDto dto;
+    private UserPersonAddressDTO dto;
 
 
     //================== ATRIBUTOS ==================
 
     private Long existingId;
     private Long nonExistingId;
-    private PageImpl<UserPersonAddressDto> pageDto;
+    private PageImpl<UserPersonAddressDTO> pageDto;
 
 
     //================== INICIALIZAÇÃO ==================
@@ -121,7 +121,7 @@ public class UserPersonAddressControllerTest {
     public void createShouldReturn201AndUserDto() throws Exception {
 
         //CHAMADA E RETORNO DO METODO
-        Mockito.when(service.save(Mockito.any(UserPersonAddressDto.class)))
+        Mockito.when(service.save(Mockito.any(UserPersonAddressDTO.class)))
                 .thenReturn(dto);
 
         //CORPO DA REQUISIÇÃO
@@ -150,7 +150,7 @@ public class UserPersonAddressControllerTest {
     public void createShouldReturn409WhenEmailAlreadyExists() throws Exception {
 
         //CHAMADA E RETORNO DO METODO
-        Mockito.when(service.save(Mockito.any(UserPersonAddressDto.class)))
+        Mockito.when(service.save(Mockito.any(UserPersonAddressDTO.class)))
                 .thenThrow(new DuplicateResourceException("Email already exists"));
 
         //CORPO DA REQUISIÇÃO
@@ -176,7 +176,7 @@ public class UserPersonAddressControllerTest {
     public void createShouldReturn422WhenValidationFails() throws Exception {
 
         // DTO INVALIDO (ex: nome vazio se tiver @NotBlank)
-        UserPersonAddressDto invalidDto = new UserPersonAddressDto(
+        UserPersonAddressDTO invalidDto = new UserPersonAddressDTO(
                 null,
                 "",          // inválido @NotBlank
                 "email-invalido",  // inválido @Email
@@ -214,7 +214,7 @@ public class UserPersonAddressControllerTest {
 
         //PREPARANDO
         Mockito.when(service.update(Mockito
-                .any(UserPersonAddressDto.class), eq(existingId)))
+                .any(UserPersonAddressDTO.class), eq(existingId)))
                 .thenReturn(dto);
 
         //CORPO DA REQUISIÇÃO - CONVERTE JAVA PARA JSON
@@ -245,7 +245,7 @@ public class UserPersonAddressControllerTest {
 
         //PREPARANDO
         Mockito.when(service.update(Mockito
-                        .any(UserPersonAddressDto.class), eq(nonExistingId)))
+                        .any(UserPersonAddressDTO.class), eq(nonExistingId)))
                 .thenThrow(new ResourceNotFoundException("User not found"));
 
         //CORPO DA REQUISIÇÃO - CONVERTE JAVA PARA JSON
@@ -268,7 +268,7 @@ public class UserPersonAddressControllerTest {
 
         //VERIFICA SERVICE CHAMOU O ID CORRETO E EXCEÇÃO VEIO DO SERVICE
         Mockito.verify(service)
-                .update(Mockito.any(UserPersonAddressDto.class), eq(nonExistingId));
+                .update(Mockito.any(UserPersonAddressDTO.class), eq(nonExistingId));
     }
 
 
@@ -279,7 +279,7 @@ public class UserPersonAddressControllerTest {
 
         //CHAMADA E RETORNO DO METODO
         Mockito.when(service.update(Mockito
-                .any(UserPersonAddressDto.class), eq(existingId)))
+                .any(UserPersonAddressDTO.class), eq(existingId)))
                 .thenThrow(new DuplicateResourceException("Email already exists"));
 
         //CORPO DA REQUISIÇÃO - converter java para json
@@ -299,7 +299,7 @@ public class UserPersonAddressControllerTest {
 
         //VERIFICA SE CHAMOU O SERVICE, E VEIO DA CAMADA DE NEGOCIO
         Mockito.verify(service)
-                .update(Mockito.any(UserPersonAddressDto.class), eq(existingId));
+                .update(Mockito.any(UserPersonAddressDTO.class), eq(existingId));
     }
 
 
@@ -309,7 +309,7 @@ public class UserPersonAddressControllerTest {
     public void updateShouldReturn422WhenValidationFails() throws Exception {
 
         // DTO INVALIDO (ex: nome vazio se tiver @NotBlank)
-        UserPersonAddressDto invalidDto = new UserPersonAddressDto(
+        UserPersonAddressDTO invalidDto = new UserPersonAddressDTO(
                 existingId,
                 "",          // inválido @NotBlank
                 "email-invalido",  // inválido @Email
@@ -334,7 +334,7 @@ public class UserPersonAddressControllerTest {
                 .andExpect(jsonPath("$.errors").isArray());;
 
         Mockito.verify(service, Mockito.never())
-                .update(Mockito.any(UserPersonAddressDto.class), Mockito.any());
+                .update(Mockito.any(UserPersonAddressDTO.class), Mockito.any());
     }
 
 

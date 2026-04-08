@@ -1,20 +1,21 @@
-package com.rpdevelopment.user_service_api.service;
+package com.rpdevelopment.user_service_api.service.users;
 
-import com.rpdevelopment.user_service_api.dto.AddressDto;
-import com.rpdevelopment.user_service_api.dto.PersonDto;
-import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
+import com.rpdevelopment.user_service_api.dto.users.AddressDTO;
+import com.rpdevelopment.user_service_api.dto.users.PersonDTO;
+import com.rpdevelopment.user_service_api.dto.users.UserPersonAddressDTO;
 import com.rpdevelopment.user_service_api.entity.Address;
 import com.rpdevelopment.user_service_api.entity.Person;
 import com.rpdevelopment.user_service_api.entity.Role;
 import com.rpdevelopment.user_service_api.entity.User;
-import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
-import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
-import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
-import com.rpdevelopment.user_service_api.projection.UserDetailsProjection;
-import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
+import com.rpdevelopment.user_service_api.exception.exceptions.DuplicateResourceException;
+import com.rpdevelopment.user_service_api.exception.exceptions.ResourceNotFoundException;
+import com.rpdevelopment.user_service_api.dto.projection.UserAddressProjection;
+import com.rpdevelopment.user_service_api.dto.projection.UserDetailsProjection;
+import com.rpdevelopment.user_service_api.dto.projection.UserDocumentProjection;
 import com.rpdevelopment.user_service_api.repository.AddressRepository;
 import com.rpdevelopment.user_service_api.repository.PersonRepository;
 import com.rpdevelopment.user_service_api.repository.UserRepository;
+import com.rpdevelopment.user_service_api.service.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,12 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserPersonAddressService implements UserDetailsService {
+public class UsersService implements UserDetailsService {
 
     //================ DEPENDÊNCIAS =====================
 
@@ -42,9 +42,9 @@ public class UserPersonAddressService implements UserDetailsService {
 
     //================ CONSTRUTOR =====================
 
-    public UserPersonAddressService(UserRepository userRepository, AddressRepository addressRepository,
-                                    PersonRepository personRepository, UserService authService,
-                                    PasswordEncoder passwordEncoder) {
+    public UsersService(UserRepository userRepository, AddressRepository addressRepository,
+                        PersonRepository personRepository, UserService authService,
+                        PasswordEncoder passwordEncoder) {
 
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
@@ -58,20 +58,20 @@ public class UserPersonAddressService implements UserDetailsService {
 
     // FIND ALL
     @Transactional(readOnly = true)
-    public Page<UserPersonAddressDto> usersFindAll (Pageable pageable) {
+    public Page<UserPersonAddressDTO> usersFindAll (Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
-        return users.map(UserPersonAddressDto::new); }
+        return users.map(UserPersonAddressDTO::new); }
 
 
     //FIND BY ID
     @Transactional(readOnly = true)
-    public UserPersonAddressDto usersFindById (Long id) {
+    public UserPersonAddressDTO usersFindById (Long id) {
         User user = userRepository.findById(id).orElseThrow(
                 ()-> new ResourceNotFoundException("Id Not Found"));
 
         //Bloquear user não admin, e user diferente do logado
         authService.validateSelfOrAdmin(user.getId());
-        return new UserPersonAddressDto(user);
+        return new UserPersonAddressDTO(user);
     }
 
 
@@ -94,7 +94,7 @@ public class UserPersonAddressService implements UserDetailsService {
     //================ SAVE =====================
 
     @Transactional
-    public UserPersonAddressDto save (UserPersonAddressDto userPersonAddressDto) {
+    public UserPersonAddressDTO save (UserPersonAddressDTO userPersonAddressDto) {
 
         //Email existe no banco?
         if (userRepository.existsByEmail(userPersonAddressDto.getEmail())) {
@@ -120,7 +120,7 @@ public class UserPersonAddressService implements UserDetailsService {
 
         //Preparando Addresses
         if (userPersonAddressDto.getAddresses() != null){
-            for(AddressDto addressDto : userPersonAddressDto.getAddresses()){
+            for(AddressDTO addressDto : userPersonAddressDto.getAddresses()){
 
                 Address address = new Address();
                 copyAddressDtoToAddress(addressDto, address);
@@ -128,14 +128,14 @@ public class UserPersonAddressService implements UserDetailsService {
             }
 
         User savedUser = userRepository.save(user);
-        return new UserPersonAddressDto(savedUser); }
+        return new UserPersonAddressDTO(savedUser); }
 
 
     //================ UPDATE =====================
 
     //UPDATE ADDRESSES
     @Transactional
-    public List<AddressDto> updateAddresses(List<AddressDto> addressDtoList, Long id) {
+    public List<AddressDTO> updateAddresses(List<AddressDTO> addressDtoList, Long id) {
 
         //Endereço repository
         User user = userRepository.findById(id)
@@ -143,7 +143,7 @@ public class UserPersonAddressService implements UserDetailsService {
         List<Address> addresses = user.getAddresses();
 
 
-        for (AddressDto addressDto : addressDtoList) {
+        for (AddressDTO addressDto : addressDtoList) {
 
             if (addressDto.getId() != null) {
                 // Atualiza endereço existente
@@ -159,13 +159,13 @@ public class UserPersonAddressService implements UserDetailsService {
         }
 
         userRepository.save(user);
-        return user.getAddresses().stream().map(AddressDto::new).toList();
+        return user.getAddresses().stream().map(AddressDTO::new).toList();
     }
 
 
     //UPDATE PERSON
     @Transactional
-    public PersonDto updatePerson(PersonDto personDto, Long id) {
+    public PersonDTO updatePerson(PersonDTO personDto, Long id) {
 
         User user = userRepository.findById(id).orElseThrow(
                 ()-> new ResourceNotFoundException("Id Not Found"));
@@ -178,13 +178,13 @@ public class UserPersonAddressService implements UserDetailsService {
         user.setPerson(person);
         userRepository.save(user);
 
-        return new PersonDto(person);
+        return new PersonDTO(person);
     }
 
 
     //UPDATE ALL
     @Transactional
-    public UserPersonAddressDto update(UserPersonAddressDto userPersonAddressDto, Long id) {
+    public UserPersonAddressDTO update(UserPersonAddressDTO userPersonAddressDto, Long id) {
 
         //User existe no banco?
         User user = userRepository.findById(id)
@@ -216,7 +216,7 @@ public class UserPersonAddressService implements UserDetailsService {
         user.getAddresses().clear();
         if (userPersonAddressDto.getAddresses() != null) {
 
-            for (AddressDto addressDto : userPersonAddressDto.getAddresses()) {
+            for (AddressDTO addressDto : userPersonAddressDto.getAddresses()) {
                 Address address;
 
                 //Novo endereço, caso não exista no banco
@@ -245,7 +245,7 @@ public class UserPersonAddressService implements UserDetailsService {
             }
         }
         User savedUser = userRepository.save(user);
-        return new UserPersonAddressDto(savedUser);
+        return new UserPersonAddressDTO(savedUser);
     }
 
 
@@ -264,19 +264,19 @@ public class UserPersonAddressService implements UserDetailsService {
     //================ MÉTODOS =====================
 
     // Converte dto user para entity user
-    public void copyUserDtoToUser(UserPersonAddressDto userPersonAddressDto, User user) {
+    public void copyUserDtoToUser(UserPersonAddressDTO userPersonAddressDto, User user) {
         user.setName(userPersonAddressDto.getName());
         user.setEmail(userPersonAddressDto.getEmail());
         user.setBirthDate(userPersonAddressDto.getBirthDate());
         user.setPassword(userPersonAddressDto.getPassword()); }
 
     //Converter dto person para entity person
-    public void copyPersonDtoToPerson(UserPersonAddressDto userPersonAddressDto, Person person) {
+    public void copyPersonDtoToPerson(UserPersonAddressDTO userPersonAddressDto, Person person) {
         person.setDocument(userPersonAddressDto.getPerson().getDocument());
         person.setType(userPersonAddressDto.getPerson().getType()); }
 
     //Converte dto Address para entity address
-    public void copyAddressDtoToAddress(AddressDto addressDto, Address address) {
+    public void copyAddressDtoToAddress(AddressDTO addressDto, Address address) {
         address.setRoad(addressDto.getRoad());
         address.setNumber(addressDto.getNumber());
         address.setNeighborhood(addressDto.getNeighborhood());

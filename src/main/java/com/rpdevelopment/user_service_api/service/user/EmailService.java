@@ -1,6 +1,6 @@
-package com.rpdevelopment.user_service_api.service;
+package com.rpdevelopment.user_service_api.service.user;
 
-import com.rpdevelopment.user_service_api.exception.EmailException;
+import com.rpdevelopment.user_service_api.exception.exceptions.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;

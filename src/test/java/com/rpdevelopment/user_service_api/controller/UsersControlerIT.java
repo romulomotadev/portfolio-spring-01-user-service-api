@@ -1,8 +1,8 @@
 package com.rpdevelopment.user_service_api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
-import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
+import com.rpdevelopment.user_service_api.dto.users.UserPersonAddressDTO;
+import com.rpdevelopment.user_service_api.service.users.UsersService;
 import com.rpdevelopment.user_service_api.tests.TokenUtil;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class UserControlerIT {
+public class UsersControlerIT {
 
     //================== DEPENDÊNCIAS ==================
 
@@ -35,7 +35,7 @@ public class UserControlerIT {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserPersonAddressService service;
+    private UsersService service;
 
     @Autowired
     private TokenUtil tokenUtil;
@@ -45,7 +45,7 @@ public class UserControlerIT {
 
     private Long existingId;
     private Long nonExistingId;
-    private UserPersonAddressDto dto;
+    private UserPersonAddressDTO dto;
     private String bearerToken;
 
 
@@ -73,7 +73,7 @@ public class UserControlerIT {
     public void findByIdShouldReturnUserWhenIdExists() throws Exception {
 
         //Preparando
-        UserPersonAddressDto savedDto = service.save(dto);
+        UserPersonAddressDTO savedDto = service.save(dto);
         Long idParaBuscar = savedDto.getId();
 
         //Chamada / Ação

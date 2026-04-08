@@ -1,4 +1,4 @@
-package com.rpdevelopment.user_service_api.projection;
+package com.rpdevelopment.user_service_api.dto.projection;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;

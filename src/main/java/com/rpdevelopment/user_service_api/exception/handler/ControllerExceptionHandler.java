@@ -1,13 +1,13 @@
-package com.rpdevelopment.user_service_api.handler;
+package com.rpdevelopment.user_service_api.exception.handler;
 
 import com.rpdevelopment.user_service_api.dto.error.CustomErrorDto;
 import com.rpdevelopment.user_service_api.dto.error.ValidateErrorDto;
-import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
-import com.rpdevelopment.user_service_api.exception.EmailException;
-import com.rpdevelopment.user_service_api.exception.ForbiddenException;
+import com.rpdevelopment.user_service_api.exception.exceptions.DuplicateResourceException;
+import com.rpdevelopment.user_service_api.exception.exceptions.EmailException;
+import com.rpdevelopment.user_service_api.exception.exceptions.ForbiddenException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
+import com.rpdevelopment.user_service_api.exception.exceptions.ResourceNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

@@ -1,11 +1,11 @@
-package com.rpdevelopment.user_service_api.dto;
+package com.rpdevelopment.user_service_api.dto.user;
 
 import com.rpdevelopment.user_service_api.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 
 @Schema(description = "DTO responsável por representar os perfis de acesso do sistema")
-public class RoleDto {
+public class RoleDTO {
 
     //ATRIBUTOS
     @Schema(description = "Identificador da role gerado automaticamente pelo banco de dados", example = "1")
@@ -14,15 +14,15 @@ public class RoleDto {
     private String authority;
 
     //CONSTRUTORES
-    public RoleDto() {
+    public RoleDTO() {
     }
 
-    public RoleDto(Long id, String authority) {
+    public RoleDTO(Long id, String authority) {
         this.id = id;
         this.authority = authority;
     }
 
-    public RoleDto(Role entity) {
+    public RoleDTO(Role entity) {
         this.id = entity.getId();
         this.authority = entity.getAuthority();
     }

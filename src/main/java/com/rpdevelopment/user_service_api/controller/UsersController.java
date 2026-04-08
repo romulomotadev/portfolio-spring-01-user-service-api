@@ -1,17 +1,15 @@
 package com.rpdevelopment.user_service_api.controller;
 
-import com.rpdevelopment.user_service_api.dto.AddressDto;
-import com.rpdevelopment.user_service_api.dto.PersonDto;
-import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
-import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
-import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
-import com.rpdevelopment.user_service_api.service.UserService;
-import com.rpdevelopment.user_service_api.service.UserPersonAddressService;
+import com.rpdevelopment.user_service_api.dto.users.AddressDTO;
+import com.rpdevelopment.user_service_api.dto.users.PersonDTO;
+import com.rpdevelopment.user_service_api.dto.users.UserPersonAddressDTO;
+import com.rpdevelopment.user_service_api.dto.projection.UserAddressProjection;
+import com.rpdevelopment.user_service_api.dto.projection.UserDocumentProjection;
+import com.rpdevelopment.user_service_api.service.users.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jdk.jfr.Description;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,22 +19,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
 @Tag(name = "Users", description = "Controller for Users")
 @RequestMapping(value = "/users")
-public class UserPersonAddressController {
+public class UsersController {
 
     // =============== DEPENDÊNCIAS ====================
 
-    private UserPersonAddressService service;
+    private UsersService service;
 
 
     // ========= CONSTRUTOR DEPENDÊNCIAS ===============
 
-    public UserPersonAddressController(UserPersonAddressService service) {
+    public UsersController(UsersService service) {
         this.service = service;
     }
 
@@ -54,8 +51,8 @@ public class UserPersonAddressController {
                     @ApiResponse(responseCode = "403", description = "Acesso proibido"),
             })
     @GetMapping
-    public ResponseEntity<Page<UserPersonAddressDto>> userFindAll(Pageable pageable) {
-        Page<UserPersonAddressDto> usersDto = service.usersFindAll(pageable);
+    public ResponseEntity<Page<UserPersonAddressDTO>> userFindAll(Pageable pageable) {
+        Page<UserPersonAddressDTO> usersDto = service.usersFindAll(pageable);
         return ResponseEntity.ok(usersDto);
     }
 
@@ -71,8 +68,8 @@ public class UserPersonAddressController {
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
             })
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserPersonAddressDto> userFindById(@PathVariable Long id) {
-        UserPersonAddressDto userDto = service.usersFindById(id);
+    public ResponseEntity<UserPersonAddressDTO> userFindById(@PathVariable Long id) {
+        UserPersonAddressDTO userDto = service.usersFindById(id);
         return ResponseEntity.ok(userDto);
     }
 
@@ -125,8 +122,8 @@ public class UserPersonAddressController {
                     @ApiResponse(responseCode = "422", description = "Dados inválidos"),
             })
     @PostMapping
-    public ResponseEntity<UserPersonAddressDto> save(@RequestBody @Valid UserPersonAddressDto userDto) {
-        UserPersonAddressDto userDtoSaved = service.save(userDto);
+    public ResponseEntity<UserPersonAddressDTO> save(@RequestBody @Valid UserPersonAddressDTO userDto) {
+        UserPersonAddressDTO userDtoSaved = service.save(userDto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userDtoSaved.getId()).toUri();
         return ResponseEntity.created(uri).body(userDtoSaved);
     }
@@ -147,10 +144,10 @@ public class UserPersonAddressController {
                     @ApiResponse(responseCode = "422", description = "Dados inválidos"),
             })
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserPersonAddressDto> update(@RequestBody @Valid UserPersonAddressDto userDto,
+    public ResponseEntity<UserPersonAddressDTO> update(@RequestBody @Valid UserPersonAddressDTO userDto,
                                                        @PathVariable Long id) {
 
-        UserPersonAddressDto userDtoUpdated = service.update(userDto, id);
+        UserPersonAddressDTO userDtoUpdated = service.update(userDto, id);
         return ResponseEntity.ok(userDtoUpdated);
     }
 
@@ -168,10 +165,10 @@ public class UserPersonAddressController {
                     @ApiResponse(responseCode = "422", description = "Dados inválidos"),
             })
     @PutMapping(value = "/{id}/person")
-    public ResponseEntity<PersonDto> updatePerson(@RequestBody @Valid PersonDto personDto,
+    public ResponseEntity<PersonDTO> updatePerson(@RequestBody @Valid PersonDTO personDto,
                                                   @PathVariable Long id) {
 
-        PersonDto personDtoUpdate = service.updatePerson(personDto, id);
+        PersonDTO personDtoUpdate = service.updatePerson(personDto, id);
         return ResponseEntity.ok(personDtoUpdate);
     }
 
@@ -188,11 +185,11 @@ public class UserPersonAddressController {
                     @ApiResponse(responseCode = "422", description = "Dados inválidos"),
             })
     @PutMapping("/{id}/addresses")
-    public ResponseEntity<List<AddressDto>> updateAddresses(
-            @RequestBody @Valid List<AddressDto> addressDto,
+    public ResponseEntity<List<AddressDTO>> updateAddresses(
+            @RequestBody @Valid List<AddressDTO> addressDto,
             @PathVariable Long id) {
 
-        List<AddressDto> addressesDtoUpdate = service.updateAddresses(addressDto, id);
+        List<AddressDTO> addressesDtoUpdate = service.updateAddresses(addressDto, id);
 
         return ResponseEntity.ok(addressesDtoUpdate);
     }
@@ -211,7 +208,7 @@ public class UserPersonAddressController {
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
             })
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<UserPersonAddressDto> delete(@PathVariable Long id) {
+    public ResponseEntity<UserPersonAddressDTO> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

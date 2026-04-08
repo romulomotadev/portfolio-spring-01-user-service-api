@@ -1,4 +1,4 @@
-package com.rpdevelopment.user_service_api.dto;
+package com.rpdevelopment.user_service_api.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.rpdevelopment.user_service_api.entity.Address;
@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 @JsonPropertyOrder({ "id", "road", "number", "neighborhood", "complement", "city", "zipCode"})
-public class AddressDto {
+public class AddressDTO {
 
     //Atributos
     @Schema(description = "Identificador único do endereço gerado pelo banco de dados", example = "1")
@@ -32,10 +32,10 @@ public class AddressDto {
     private String zipCode;
 
     //Construtores
-    public AddressDto() {
+    public AddressDTO() {
     }
 
-    public AddressDto(Long id, String road, String number, String neighborhood, String complement, String city, String zipCode, User user) {
+    public AddressDTO(Long id, String road, String number, String neighborhood, String complement, String city, String zipCode, User user) {
         this.id = id;
         this.road = road;
         this.number = number;
@@ -45,7 +45,7 @@ public class AddressDto {
         this.zipCode = zipCode;
     }
 
-    public AddressDto(Address entity) {
+    public AddressDTO(Address entity) {
         this.id = entity.getId();
         this.road = entity.getRoad();
         this.number = entity.getNumber();

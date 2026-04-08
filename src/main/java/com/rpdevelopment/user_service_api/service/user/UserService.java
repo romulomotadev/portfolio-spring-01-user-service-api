@@ -1,11 +1,11 @@
-package com.rpdevelopment.user_service_api.service;
+package com.rpdevelopment.user_service_api.service.user;
 
 
-import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
+import com.rpdevelopment.user_service_api.dto.users.UserPersonAddressDTO;
 import com.rpdevelopment.user_service_api.entity.Role;
 import com.rpdevelopment.user_service_api.entity.User;
-import com.rpdevelopment.user_service_api.exception.ForbiddenException;
-import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
+import com.rpdevelopment.user_service_api.exception.exceptions.ForbiddenException;
+import com.rpdevelopment.user_service_api.exception.exceptions.ResourceNotFoundException;
 import com.rpdevelopment.user_service_api.repository.RoleRepository;
 import com.rpdevelopment.user_service_api.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -40,9 +40,9 @@ public class UserService {
 	logado e converte a entidade para UserPersonAddressDto.*/
 
 	@Transactional(readOnly = true)
-	public UserPersonAddressDto getMe(){
+	public UserPersonAddressDTO getMe(){
 		User user = authenticated();
-		return new UserPersonAddressDto(user);
+		return new UserPersonAddressDTO(user);
 	}
 
 

@@ -1,15 +1,14 @@
-package com.rpdevelopment.user_service_api.dto;
+package com.rpdevelopment.user_service_api.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.rpdevelopment.user_service_api.entity.Person;
 import com.rpdevelopment.user_service_api.entity.Type;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @JsonPropertyOrder({ "id", "document", "type"})
-public class PersonDto {
+public class PersonDTO {
 
     //Atributos
     @Schema(description = "Identificador único do documento gerado pelo banco de dados", example = "1")
@@ -24,16 +23,16 @@ public class PersonDto {
     private Type type;
 
     //Construtores
-    public PersonDto() {
+    public PersonDTO() {
     }
 
-    public PersonDto(Long id, Type type, String document) {
+    public PersonDTO(Long id, Type type, String document) {
         this.id = id;
         this.type = type;
         this.document = document;
     }
 
-    public PersonDto(Person entity) {
+    public PersonDTO(Person entity) {
         this.id = entity.getId();
         this.type = entity.getType();
         this.document = entity.getDocument();

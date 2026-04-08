@@ -1,4 +1,4 @@
-package com.rpdevelopment.user_service_api.dto;
+package com.rpdevelopment.user_service_api.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.rpdevelopment.user_service_api.entity.Address;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Schema(description = "DTO responsável por representar o cadastro completo de um usuário, incluindo dados pessoais, documento e endereços.")
 @JsonPropertyOrder({"id","name", "email", "birthDate", "password", "person", "addresses"})
-public class UserPersonAddressDto {
+public class UserPersonAddressDTO {
 
     //Atributos
     @Schema(description = "Identificador do usuário gerado automaticamente pelo banco de dados", example = "1")
@@ -46,21 +46,21 @@ public class UserPersonAddressDto {
     @Schema(description = "Dados do documento da pessoa (CPF ou CNPJ)")
     @NotNull
     @Valid
-    private PersonDto person;
+    private PersonDTO person;
 
     @Schema(description = "Lista de endereços associados ao usuário")
     @Valid
-    private List<AddressDto> addresses = new ArrayList<AddressDto>();
+    private List<AddressDTO> addresses = new ArrayList<AddressDTO>();
 
     @Schema(description = "Lista de perfis de acesso atribuídos ao usuário", example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")
     private List<String> roles = new ArrayList<>();
 
 
     //Construtores
-    public UserPersonAddressDto() {
+    public UserPersonAddressDTO() {
     }
 
-    public UserPersonAddressDto(Long id, String name, String email, LocalDate birthDate, String password, PersonDto person, List<AddressDto> addresses) {
+    public UserPersonAddressDTO(Long id, String name, String email, LocalDate birthDate, String password, PersonDTO person, List<AddressDTO> addresses) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -70,17 +70,17 @@ public class UserPersonAddressDto {
         this.addresses = addresses;
     }
 
-    public UserPersonAddressDto(User entity){
+    public UserPersonAddressDTO(User entity){
         this.id = entity.getId();
         this.name = entity.getName();
         this.email = entity.getEmail();
         this.birthDate = entity.getBirthDate();
         this.password = entity.getPassword();
 
-        this.person = new PersonDto(entity.getPerson());
+        this.person = new PersonDTO(entity.getPerson());
 
         for (Address address : entity.getAddresses()) {
-            this.addresses.add(new AddressDto(address));
+            this.addresses.add(new AddressDTO(address));
         }
 
         //Obter usuários locagos
@@ -92,7 +92,7 @@ public class UserPersonAddressDto {
 
 
     //Métodos
-    public void addAddresses(List<AddressDto> addresses) {
+    public void addAddresses(List<AddressDTO> addresses) {
         this.addresses.addAll(addresses);
     }
 
@@ -118,11 +118,11 @@ public class UserPersonAddressDto {
         return password;
     }
 
-    public PersonDto getPerson() {
+    public PersonDTO getPerson() {
         return person;
     }
 
-    public List<AddressDto> getAddresses() {
+    public List<AddressDTO> getAddresses() {
         return addresses;
     }
 
@@ -147,7 +147,7 @@ public class UserPersonAddressDto {
         this.password = password;
     }
 
-    public void setPerson(@NotNull @Valid PersonDto person) {
+    public void setPerson(@NotNull @Valid PersonDTO person) {
         this.person = person;
     }
 }

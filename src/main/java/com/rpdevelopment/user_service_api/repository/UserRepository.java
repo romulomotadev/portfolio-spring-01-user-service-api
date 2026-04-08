@@ -1,11 +1,10 @@
 package com.rpdevelopment.user_service_api.repository;
 
 import com.rpdevelopment.user_service_api.entity.User;
-import com.rpdevelopment.user_service_api.projection.UserAddressProjection;
-import com.rpdevelopment.user_service_api.projection.UserDetailsProjection;
-import com.rpdevelopment.user_service_api.projection.UserDocumentProjection;
+import com.rpdevelopment.user_service_api.dto.projection.UserAddressProjection;
+import com.rpdevelopment.user_service_api.dto.projection.UserDetailsProjection;
+import com.rpdevelopment.user_service_api.dto.projection.UserDocumentProjection;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,16 +1,16 @@
 package com.rpdevelopment.user_service_api.service;
 
-import com.rpdevelopment.user_service_api.dto.AddressDto;
-import com.rpdevelopment.user_service_api.dto.PersonDto;
-import com.rpdevelopment.user_service_api.dto.UserPersonAddressDto;
-import com.rpdevelopment.user_service_api.entity.Address;
-import com.rpdevelopment.user_service_api.entity.Person;
+import com.rpdevelopment.user_service_api.dto.users.AddressDTO;
+import com.rpdevelopment.user_service_api.dto.users.PersonDTO;
+import com.rpdevelopment.user_service_api.dto.users.UserPersonAddressDTO;
 import com.rpdevelopment.user_service_api.entity.User;
-import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
-import com.rpdevelopment.user_service_api.exception.ResourceNotFoundException;
+import com.rpdevelopment.user_service_api.exception.exceptions.DuplicateResourceException;
+import com.rpdevelopment.user_service_api.exception.exceptions.ResourceNotFoundException;
 import com.rpdevelopment.user_service_api.repository.AddressRepository;
 import com.rpdevelopment.user_service_api.repository.PersonRepository;
 import com.rpdevelopment.user_service_api.repository.UserRepository;
+import com.rpdevelopment.user_service_api.service.user.UserService;
+import com.rpdevelopment.user_service_api.service.users.UsersService;
 import com.rpdevelopment.user_service_api.tests.UserFactory;
 import com.rpdevelopment.user_service_api.tests.UserFactoryDto;
 import org.assertj.core.api.Assertions;
@@ -31,14 +31,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
-public class UserPersonAddressServiceTest {
+public class UsersServiceTest {
 
     //================== DEPENDÊNCIAS ==================
 
@@ -55,10 +54,10 @@ public class UserPersonAddressServiceTest {
     private AddressRepository addressRepository;
 
     @InjectMocks
-    private UserPersonAddressService service;
+    private UsersService service;
 
     private User user;
-    private UserPersonAddressDto userDto;
+    private UserPersonAddressDTO userDto;
 
 
     //================== ATRIBUTOS ==================
@@ -89,7 +88,7 @@ public class UserPersonAddressServiceTest {
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
 
         //Ação
-        UserPersonAddressDto result = service.usersFindById(existingId);
+        UserPersonAddressDTO result = service.usersFindById(existingId);
 
         //Verificação
         Assertions.assertThat(result).isNotNull();
@@ -138,7 +137,7 @@ public class UserPersonAddressServiceTest {
         Mockito.when(userRepository.findAll(pageable)).thenReturn(userPage);
 
         // Ação
-        Page<UserPersonAddressDto> result = service.usersFindAll(pageable);
+        Page<UserPersonAddressDTO> result = service.usersFindAll(pageable);
 
         // Verificação
         Assertions.assertThat(result).isNotNull();
@@ -159,11 +158,11 @@ public class UserPersonAddressServiceTest {
     public void createShouldReturnUserDto(){
 
         //Preparando
-        UserPersonAddressDto userDto = UserFactoryDto.createValidUserFactoryDto();
+        UserPersonAddressDTO userDto = UserFactoryDto.createValidUserFactoryDto();
         Mockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(user);
 
         //Ação
-        UserPersonAddressDto result = service.save(userDto);
+        UserPersonAddressDTO result = service.save(userDto);
 
         //Verificação
         Assertions.assertThat(result).isNotNull();
@@ -184,7 +183,7 @@ public class UserPersonAddressServiceTest {
     public void createShouldReturnDuplicateExceptionWhenEmailAlreadyExists(){
 
         //Preparando
-        UserPersonAddressDto duplicateEmailDto = UserFactoryDto.createValidUserFactoryDto();
+        UserPersonAddressDTO duplicateEmailDto = UserFactoryDto.createValidUserFactoryDto();
         duplicateEmailDto.setEmail("duplicateEmail@gmail.com");
 
         Mockito.when(userRepository.existsByEmail("duplicateEmail@gmail.com")).thenReturn(true);
@@ -202,7 +201,7 @@ public class UserPersonAddressServiceTest {
     public void createShouldReturnExceptionWhenDocumentAlreadyExists(){
 
         //Preparando
-        UserPersonAddressDto duplicateDocumentDto = UserFactoryDto.createValidUserFactoryDto();
+        UserPersonAddressDTO duplicateDocumentDto = UserFactoryDto.createValidUserFactoryDto();
         duplicateDocumentDto.getPerson().setDocument("duplicateDocument");
 
         Mockito.when(personRepository.existsByDocument("duplicateDocument")).thenReturn(true);
@@ -222,7 +221,7 @@ public class UserPersonAddressServiceTest {
     public void updateByIdShouldUpdateEntity() {
 
         //Preparando
-        UserPersonAddressDto updateDto = UserFactoryDto.createValidUserFactoryDto();
+        UserPersonAddressDTO updateDto = UserFactoryDto.createValidUserFactoryDto();
 
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(user);
@@ -230,7 +229,7 @@ public class UserPersonAddressServiceTest {
                 .thenReturn(user.getAddresses().getFirst());
 
         //Ação
-        UserPersonAddressDto result = service.update(updateDto, existingId);
+        UserPersonAddressDTO result = service.update(updateDto, existingId);
 
         //Verificação
         Assertions.assertThat(result).isNotNull();
@@ -249,14 +248,14 @@ public class UserPersonAddressServiceTest {
     public void updatePersonShouldUpdateWhenUserExists() {
 
         // Preparando
-        PersonDto personDto = UserFactoryDto.createValidUserFactoryDto().getPerson();
+        PersonDTO personDto = UserFactoryDto.createValidUserFactoryDto().getPerson();
         personDto.setId(existingId);
 
         Mockito.when(userRepository.findById(existingId))
                 .thenReturn(Optional.of(user));
 
         // Ação
-        PersonDto result = service.updatePerson(personDto, existingId);
+        PersonDTO result = service.updatePerson(personDto, existingId);
 
         // Verificação
         Assertions.assertThat(result).isNotNull();
@@ -270,7 +269,7 @@ public class UserPersonAddressServiceTest {
     @DisplayName("Deve atualizar Addresses quando id do usuário existe")
     public void updateAddressesShouldUpdateWhenUserExists() {
         // Preparando dados
-        List<AddressDto> addressDtos = UserFactoryDto.createValidUserFactoryDto().getAddresses();
+        List<AddressDTO> addressDtos = UserFactoryDto.createValidUserFactoryDto().getAddresses();
 
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(ArgumentMatchers.any())).thenReturn(user);
@@ -282,7 +281,7 @@ public class UserPersonAddressServiceTest {
         }
 
         // Ação
-        List<AddressDto> result = service.updateAddresses(addressDtos, existingId);
+        List<AddressDTO> result = service.updateAddresses(addressDtos, existingId);
 
         // Verificação
         Assertions.assertThat(result).isNotEmpty();
@@ -296,7 +295,7 @@ public class UserPersonAddressServiceTest {
     public void updateShouldReturnNotFoundExceptionWhenDocumentNotExist(){
 
         //Preparando
-        UserPersonAddressDto updateDto = UserFactoryDto.createValidUserFactoryDto();
+        UserPersonAddressDTO updateDto = UserFactoryDto.createValidUserFactoryDto();
         Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         //Ação || Validação
@@ -312,7 +311,7 @@ public class UserPersonAddressServiceTest {
     public void updatePersonShouldThrowExceptionWhenUserNotFound(){
 
         //Preparando
-        PersonDto persnDto = UserFactoryDto.createValidUserFactoryDto().getPerson();
+        PersonDTO persnDto = UserFactoryDto.createValidUserFactoryDto().getPerson();
         Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         //Ação || Validação
@@ -325,7 +324,7 @@ public class UserPersonAddressServiceTest {
     @DisplayName("Update Addresses deve lançar exceção quando usuário não existe")
     public void updateAddressesShouldThrowExceptionWhenUserNotFound(){
         // Preparando
-        List<AddressDto> addressDtos = UserFactoryDto.createValidUserFactoryDto().getAddresses();
+        List<AddressDTO> addressDtos = UserFactoryDto.createValidUserFactoryDto().getAddresses();
 
         // CORREÇÃO: Use userRepository, que é o que o service chama primeiro
         Mockito.when(userRepository.findById(nonExistingId)).thenReturn(Optional.empty());
@@ -343,7 +342,7 @@ public class UserPersonAddressServiceTest {
     public void updateShouldReturnExceptionDuplicateWhenEmailExists(){
 
         //Preparando
-        UserPersonAddressDto duplicateEmailDto = UserFactoryDto.createValidUserFactoryDto();
+        UserPersonAddressDTO duplicateEmailDto = UserFactoryDto.createValidUserFactoryDto();
         duplicateEmailDto.setEmail("duplicateEmail@gmail.com");
 
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
@@ -364,7 +363,7 @@ public class UserPersonAddressServiceTest {
     public void updateShouldReturnExceptionDuplicateWhenDocumentExists(){
 
         //Preparando
-        UserPersonAddressDto duplicateDocumentDto = UserFactoryDto.createValidUserFactoryDto();
+        UserPersonAddressDTO duplicateDocumentDto = UserFactoryDto.createValidUserFactoryDto();
         duplicateDocumentDto.getPerson().setDocument("duplicateDocument");
 
         Mockito.when(userRepository.findById(existingId)).thenReturn(Optional.of(user));
