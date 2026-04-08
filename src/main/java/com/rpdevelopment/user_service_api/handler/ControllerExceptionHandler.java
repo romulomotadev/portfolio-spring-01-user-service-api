@@ -3,6 +3,7 @@ package com.rpdevelopment.user_service_api.handler;
 import com.rpdevelopment.user_service_api.dto.error.CustomErrorDto;
 import com.rpdevelopment.user_service_api.dto.error.ValidateErrorDto;
 import com.rpdevelopment.user_service_api.exception.DuplicateResourceException;
+import com.rpdevelopment.user_service_api.exception.EmailException;
 import com.rpdevelopment.user_service_api.exception.ForbiddenException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -80,6 +81,14 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<CustomErrorDto> forbidden(ForbiddenException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomErrorDto err = new CustomErrorDto(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    //TRATANDO EMAIL
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<CustomErrorDto> email(EmailException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         CustomErrorDto err = new CustomErrorDto(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
