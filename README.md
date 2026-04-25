@@ -1,12 +1,24 @@
+![Java](https://img.shields.io/badge/Java-21-blue)
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3-green)
+---
+
 # 👤 User Service API
 
-Este microsserviço é o pilar de autenticação e gestão de perfis para uma arquitetura baseada em microsserviços. Ele gerencia desde o cadastro de usuários (Pessoa Física e Jurídica) até a autorização de acesso via tokens seguros, utilizando o **Spring Authorization Server**.
+Este microsserviço é responsável pela autenticação e gerenciamento de usuários em uma arquitetura baseada em microsserviços.
 
+Ele lida com o registro de usuários (individual e corporativo), autorização baseada em funções e acesso seguro usando tokens JWT, com o suporte do Spring Authorization Server.
+
+---
+
+## 🧭 Visão Geral da Arquitetura
+
+![Architecture](src/main/java/com/rpdevelopment/user_service_api/docs/diagrams/diagram-user-service.jpg)
 ---
 
 ## 📐 Arquitetura e Modelagem
 O projeto foi desenvolvido com foco em escalabilidade e manutenção, utilizando padrões de mercado:
 
+* **Arquitetura em Camadas:** Separação entre Controller, Service e Repository, promovendo baixo acoplamento e alta coesão.
 * **Modelagem de Dados:** Relacionamentos complexos $N:N$ para Perfis (Roles) e $1:1$ para detalhes de Pessoa e Endereço.
 * **Projeções (Spring Data JPA):** Otimização de consultas ao banco de dados, buscando apenas os campos necessários através de interfaces de projeção.
 * **Handlers de Exceção:** Tratamento global de erros através de um `@ControllerAdvice`, garantindo respostas HTTP padronizadas e seguras.
@@ -15,9 +27,9 @@ O projeto foi desenvolvido com foco em escalabilidade e manutenção, utilizando
 ---
 
 ## 🛠️ Tecnologias e Ferramentas
-* **Linguagem:** Java (8+) 
+* **Linguagem:** Java
 * **Framework:** Spring Boot 3, Spring Data JPA, Spring Security 
-* **Segurança:** Autenticação e autorização com JWT (OAuth2) 
+* **Segurança:** Servidor de autorização OAuth2 com tokens JWT (Servidor de Autorização Spring)
 * **Banco de Dados:** PostgreSQL (Produção/Dev) e H2 (Testes) 
 * **APIs:** REST, Swagger/OpenAPI 
 * **Testes:** JUnit 5, Mockito 
@@ -25,7 +37,7 @@ O projeto foi desenvolvido com foco em escalabilidade e manutenção, utilizando
 
 ---
 
-## 🧪 Qualidade de Software (TDD)
+## 🧪 Qualidade de Software
 A aplicação possui uma sólida cobertura de testes automatizados, garantindo a confiabilidade das regras de negócio:
 
 * **Testes de Integração (IT):** Validação de fluxos completos de ponta a ponta, desde o Controller até a persistência.
@@ -36,9 +48,15 @@ A aplicação possui uma sólida cobertura de testes automatizados, garantindo a
 
 ## 📂 Documentação e Testes Manuais
 Para facilitar a exploração da API, o projeto inclui:
-* **Diagramas:** Modelagem de Entidade e Classe detalhada (disponível em `src/main/resources/docs/diagrams`).
-* **Postman:** Collection e Environment prontos para importar e testar os endpoints imediatamente.
+* **Diagramas:** Modelagem de Entidade e Classe detalhada (disponível em `src/main/java/com.rpdevelopment.user_service_api/docs/diagrams`).
+* **Postman:** Collection e Environment prontos para importar e testar os endpoints imediatamente. (disponível em `src/main/java/com.rpdevelopment.user_service_api/docs/postman`).
 * **Swagger:** Documentação interativa disponível via UI ao rodar a aplicação.
+
+    * Swagger UI (local environment)
+      👉 http://localhost:8080/swagger-ui/index.html
+
+    * OpenAPI JSON (local environment)
+      👉 http://localhost:8080/v3/api-docs
 
 ---
 
@@ -76,14 +94,30 @@ Todos os endpoints requerem autenticação JWT:
   }
 ]
 ```
+---
+## ▶️ Executando o Projeto
 
+### Requisitos
+- Java 21+
+- Maven
+- PostgreSQL
+
+### Passos
+
+```bash
+git clone https://github.com/romulomotadev/portfolio-spring-01-user-service-api.git
+cd portfolio-spring-01-user-service-api
+mvn clean install
+mvn spring-boot:run
+```
 ---
 
 ## 🚀 Próximos Passos
-Este projeto é a primeira etapa de um ecossistema de três microsserviços voltados para o portfólio profissional:
-1. **Product & Inventory Service:** Gestão de estoque e catálogo (Em desenvolvimento).
-2. **Order Service:** Orquestração de pedidos com integração entre serviços e mensageria (RabbitMQ).
-3. **Infraestrutura:** Conteinerização com **Docker**, monitoramento com **Prometheus/Grafana** e deploy via **AWS**.
+Este projeto é a primeira etapa de um ecossistema de quatro microsserviços voltados para o portfólio profissional:
+1. **User Service:** Gestão de Usuários e Autenticação.
+2. **Product & Inventory Service:** Gestão de estoque e catálogo (Em desenvolvimento).
+3. **Order Service:** Orquestração de pedidos com integração entre serviços e mensageria (RabbitMQ) - (Em desenvolvimento).
+4. **Infraestrutura:** Conteinerização com **Docker**, monitoramento com **Prometheus/Grafana** e deploy via **AWS**. (Em breve)
 
 ---
 
