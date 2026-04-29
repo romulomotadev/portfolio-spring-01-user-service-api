@@ -27,7 +27,7 @@ O projeto foi desenvolvido com foco em escalabilidade e manutenção, utilizando
 ---
 
 ## 🛠️ Tecnologias e Ferramentas
-* **Linguagem:** Java
+* **Linguagem:** Java 21
 * **Framework:** Spring Boot 3, Spring Data JPA, Spring Security 
 * **Segurança:** Servidor de autorização OAuth2 com tokens JWT (Servidor de Autorização Spring)
 * **Banco de Dados:** PostgreSQL (Produção/Dev) e H2 (Testes) 
@@ -60,18 +60,46 @@ Para facilitar a exploração da API, o projeto inclui:
 
 ---
 
-### 🔹 JWT e Autenticação
+## 🔐 Autenticação (JWT)
 
-Todos os endpoints requerem autenticação JWT:
+Esta API utiliza autenticação baseada em **JWT (Bearer Token)** para proteger os endpoints.
 
-1. Obtenha o token via endpoint `/login`.
-2. Clique em **Authorize** no Swagger UI.
-3. Cole o token no formato `Bearer <token>`.
-4. Execute as requisições nos endpoints protegidos.
+### 📌 Como obter o token
+
+1. Realize a autenticação no endpoint `/login`
+2. Copie o token JWT retornado na resposta
+
+### 📌 Como utilizar no Swagger
+
+1. Clique no botão **Authorize** no Swagger UI
+2. Insira o token no formato:
+
+```
+Bearer seu_token_aqui
+```
+
+3. Clique em **Authorize**
+4. Agora você pode acessar os endpoints protegidos
+
+### 🔒 Endpoints protegidos
+
+Todos os endpoints exigem autenticação, exceto os responsáveis por login/autenticação.
+
+### 📥 Exemplo de resposta do login
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
 
 ---
 
-## 🚀 Endpoints Principais
+## 🚀 Endpoints
+Alguns endpoints principais da API estão listados abaixo. Para a documentação completa, consulte o Swagger.
+
+Para a documentação completa, acesse o Swagger:
+👉 http://localhost:8080/swagger-ui.html
 
 | Endpoint | Método | Descrição |
 |----------|--------|-----------|
@@ -115,7 +143,7 @@ mvn spring-boot:run
 ## 🚀 Próximos Passos
 Este projeto é a primeira etapa de um ecossistema de quatro microsserviços voltados para o portfólio profissional:
 1. **User Service:** Gestão de Usuários e Autenticação.
-2. **Product & Inventory Service:** Gestão de estoque e catálogo (Em desenvolvimento).
+2. **Product & Inventory Service:** Gestão de estoque e catálogo.
 3. **Order Service:** Orquestração de pedidos com integração entre serviços e mensageria (RabbitMQ) - (Em desenvolvimento).
 4. **Infraestrutura:** Conteinerização com **Docker**, monitoramento com **Prometheus/Grafana** e deploy via **AWS**. (Em breve)
 
