@@ -30,7 +30,7 @@ public class OpenAPIConfig {
                         .description("User Reference Project")
                         .version("v0.0.1")
                         .license(new License()
-                                .name("Apache 4.0")
+                                .name("GitHub")
                                 .url("https://github.com/romulomotadev/portfolio-spring-01-user-service-api")));
     }
 

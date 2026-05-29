@@ -141,11 +141,10 @@ mvn spring-boot:run
 ---
 
 ## 🚀 Próximos Passos
-Este projeto é a primeira etapa de um ecossistema de quatro microsserviços voltados para o portfólio profissional:
+Este projeto é a primeira etapa de um ecossistema de três microsserviços voltados para o portfólio profissional:
 1. **User Service:** Gestão de Usuários e Autenticação.
 2. **Product & Inventory Service:** Gestão de estoque e catálogo.
 3. **Order Service:** Orquestração de pedidos com integração entre serviços e mensageria (RabbitMQ) - (Em desenvolvimento).
-4. **Infraestrutura:** Conteinerização com **Docker**, monitoramento com **Prometheus/Grafana** e deploy via **AWS**. (Em breve)
 
 ---
 
