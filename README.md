@@ -1,12 +1,105 @@
 ![Java](https://img.shields.io/badge/Java-21-blue)
 ![Spring Boot](https://img.shields.io/badge/SpringBoot-3-green)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
 ---
 
 # 👤 User Service API
 
-Este microsserviço é responsável pela autenticação e gerenciamento de usuários em uma arquitetura baseada em microsserviços.
+## 📌 Sobre o projeto
 
-Ele lida com o registro de usuários (individual e corporativo), autorização baseada em funções e acesso seguro usando tokens JWT, com o suporte do Spring Authorization Server.
+Microsserviço de autenticação e gerenciamento de usuários baseado em arquitetura de microsserviços com JWT e OAuth2.
+
+---
+
+## ⚡ Quick Start
+
+```bash
+git clone https://github.com/romulomotadev/portfolio-spring-01-user-service-api.git
+cd portfolio-spring-01-user-service-api
+docker compose up --build
+```
+
+---
+
+## 🛠️ Tecnologias
+* **Linguagem:** Java 21
+* **Framework:** Spring Boot 3, Spring Data JPA, Spring Security
+* **Segurança:** Servidor de autorização OAuth2 com tokens JWT (Servidor de Autorização Spring)
+* **Banco de Dados:** PostgreSQL (Produção/Dev) e H2 (Testes)
+* **APIs:** REST, Swagger/OpenAPI
+* **Testes:** JUnit 5, Mockito
+* **Infraestrutura:** Docker / Docker Compose
+* **Build:** Maven
+
+---
+
+## ✨ Principais Recursos
+
+- Authorization & Authentication (JWT / OAuth2)
+- Spring Security
+- REST API
+- PostgreSQL
+- Docker / Docker Compose
+- OpenAPI / Swagger
+- Testes Unitários & Testes de Integração
+- Arquitetura limpa (DTO, Camadas, Exception Handling)
+
+---
+
+## ▶️ Executando o Projeto
+
+### Requisitos
+
+#### Opção 1 - Executar com Docker (Recomendado)
+
+- Docker
+- Docker Compose
+
+#### Opção 2 - Executar Localmente
+
+- Java 21+
+- Maven
+- PostgreSQL
+
+---
+
+## 🐳 Docker
+
+```bash
+# clonar projeto 
+git clone https://github.com/romulomotadev/portfolio-spring-01-user-service-api.git
+
+# acessar diretório da aplicação
+cd portfolio-spring-01-user-service-api
+
+# constrói a imagem antes de subir
+docker compose up --build
+
+# Verificar containers
+docker ps
+
+# parar os containers
+docker compose down
+
+# subir novamente sem reconstruir
+docker compose up
+
+# subir em background
+docker compose up -d
+```
+---
+
+## 💻 Local
+
+```bash
+git clone https://github.com/romulomotadev/portfolio-spring-01-user-service-api.git
+
+cd portfolio-spring-01-user-service-api
+
+mvn clean install
+
+mvn spring-boot:run
+```
 
 ---
 
@@ -26,17 +119,6 @@ O projeto foi desenvolvido com foco em escalabilidade e manutenção, utilizando
 
 ---
 
-## 🛠️ Tecnologias e Ferramentas
-* **Linguagem:** Java 21
-* **Framework:** Spring Boot 3, Spring Data JPA, Spring Security 
-* **Segurança:** Servidor de autorização OAuth2 com tokens JWT (Servidor de Autorização Spring)
-* **Banco de Dados:** PostgreSQL (Produção/Dev) e H2 (Testes) 
-* **APIs:** REST, Swagger/OpenAPI 
-* **Testes:** JUnit 5, Mockito 
-* **Build:** Maven 
-
----
-
 ## 🧪 Qualidade de Software
 A aplicação possui uma sólida cobertura de testes automatizados, garantindo a confiabilidade das regras de negócio:
 
@@ -52,11 +134,8 @@ Para facilitar a exploração da API, o projeto inclui:
 * **Postman:** Collection e Environment prontos para importar e testar os endpoints imediatamente. (disponível em `src/main/java/com.rpdevelopment.user_service_api/docs/postman`).
 * **Swagger:** Documentação interativa disponível via UI ao rodar a aplicação.
 
-    * Swagger UI (local environment)
-      👉 http://localhost:8080/swagger-ui/index.html
-
-    * OpenAPI JSON (local environment)
-      👉 http://localhost:8080/v3/api-docs
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
+- OpenAPI: http://localhost:8080/v3/api-docs
 
 ---
 
@@ -121,22 +200,6 @@ Para a documentação completa, acesse o Swagger:
     "roles": ["ROLE_ADMIN"]
   }
 ]
-```
----
-## ▶️ Executando o Projeto
-
-### Requisitos
-- Java 21+
-- Maven
-- PostgreSQL
-
-### Passos
-
-```bash
-git clone https://github.com/romulomotadev/portfolio-spring-01-user-service-api.git
-cd portfolio-spring-01-user-service-api
-mvn clean install
-mvn spring-boot:run
 ```
 ---
 
